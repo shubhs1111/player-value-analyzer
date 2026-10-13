@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What a Footballer Is Worth</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -87,6 +84,16 @@ body { background: #0e1012; }
   .sr-kpi-val small { font-size: 14px; color: var(--sr-muted2); font-weight: 400; }
   .sr-kpi-foot { display: flex; align-items: center; justify-content: space-between; font-size: 12px;
     color: var(--sr-muted2); padding-top: 8px; border-top: 1px solid var(--sr-line2); }
+  #k-acc-tile { position: relative; cursor: pointer; }
+  .sr-kpi-pop { position: absolute; top: calc(100% + 6px); right: 0; width: 280px; max-width: calc(100vw - 32px);
+    background: #101214; border: 1px solid var(--sr-line); padding: 12px; font-size: 12px; color: var(--sr-muted);
+    line-height: 1.6; z-index: 20; box-shadow: 0 10px 28px rgba(0,0,0,.45); }
+  .sr-kpi-pop[hidden] { display: none; }
+  .sr-kpi-pop-head { color: var(--sr-accent); font-weight: 700; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .04em; margin-bottom: 7px; }
+  .sr-kpi-pop-line { margin: 0 0 6px; }
+  .sr-kpi-pop-line:last-child { margin-bottom: 0; }
+  .sr-kpi-pop-line b { color: var(--sr-fg2); }
 
   /* ---------- filter console ---------- */
   .sr-console { background: #14171a; border: 1px solid var(--sr-line); margin: 0 16px 16px;
@@ -319,91 +326,7 @@ body { background: #0e1012; }
   .sr-squad-empty { margin: 0 16px 16px; padding: 24px; text-align: center; color: var(--sr-muted2);
     font-size: 12.5px; border: 1px solid var(--sr-line); background: #14171a; }
 
-  /* ---------- diagnostics ---------- */
-  #panel-diagnostics { padding: 0; }
-  .sr-diag-content { max-width: 1440px; margin: 0 auto; padding: 48px 32px 36px;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  .sr-diag-sec { display: grid; justify-items: center; margin: 0 0 42px; padding: 0 0 34px; background: none;
-    border: 0; border-bottom: 1px solid var(--sr-line); text-align: center; }
-  .sr-diag-title { font-family: "Instrument Serif", Georgia, "Times New Roman", serif; font-size: clamp(48px, 5vw, 68px);
-    line-height: .98; letter-spacing: -.025em; color: #fff; font-weight: 400; margin: 0 0 17px; }
-  .sr-diag-sec-head { display: flex; align-items: center; gap: 8px; font-family: "JetBrains Mono", var(--sr-tab); font-size: 11px;
-    line-height: 1.3; color: var(--sr-muted); font-weight: 700; letter-spacing: .09em; text-transform: uppercase; margin: 0; }
-  .sr-diag-sec-head::before { content: ''; display: block; width: 6px; height: 6px; flex: none;
-    border-radius: 1px; background: var(--sr-accent); }
-  .sr-diag-sec-sub { font-size: 13px; color: var(--sr-muted); margin: 0; line-height: 1.65; max-width: 76ch; }
-  .sr-diag-sec .sr-diag-sec-sub { max-width: 58ch; font-size: clamp(16px, 1.4vw, 18px); line-height: 1.65; }
-  .sr-diag-row { margin: 0 0 46px; display: grid; gap: clamp(28px, 3vw, 46px); align-items: start; }
-  .sr-diag-row--summary { grid-template-columns: minmax(280px, 5fr) minmax(0, 7fr); }
-  .sr-diag-row--evidence { grid-template-columns: minmax(0, 8fr) minmax(280px, 4fr); margin-bottom: 0; }
-  .sr-diag-cell { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-  .sr-diag-callout { background: #14171a; border: 1px solid var(--sr-line); border-radius: 4px;
-    padding: 22px; font-size: 14px; color: #c6cad1; line-height: 1.7; flex: 1; }
-  .sr-diag-callout-title { font-family: "Instrument Serif", Georgia, "Times New Roman", serif; font-size: 27px; color: #fff; font-weight: 400;
-    line-height: 1.2; margin: -1px 0 17px; padding-bottom: 15px; border-bottom: 1px solid var(--sr-line); }
-  .sr-diag-callout-copy { border-left: 2px solid var(--sr-accent); padding-left: 14px; font-style: italic; }
-  .sr-diag-table-wrap { background: #14171a; border: 1px solid var(--sr-line); border-radius: 4px;
-    overflow: hidden; width: 100%; }
-  .sr-diag-table-wrap .sr-scroll { width: 100%; }
-  #diag-table, #diag-examples { width: 100%; table-layout: auto; font-family: "JetBrains Mono", var(--sr-tab); }
-  #diag-table { min-width: 650px; }
-  #diag-examples { min-width: 620px; }
-  #diag-table td, #diag-table th, #diag-examples td, #diag-examples th { padding: 12px 14px;
-    overflow: hidden; text-overflow: ellipsis; }
-  #diag-table th, #diag-examples th { background: #1a1d22; font-family: var(--sr-tab); font-size: 10.5px;
-    letter-spacing: .065em; }
-  #diag-table td, #diag-examples td { font-size: 12.5px; white-space: nowrap; }
-  #diag-examples td:first-child { white-space: normal; }
-  .sr-diag-table-wrap .sr-table tbody tr { cursor: default; }
-  .sr-diag-table-wrap .sr-table tbody tr:hover { background: #1a1d22; }
-  .sr-diag-pos { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-family: Inter, sans-serif;
-    font-size: 13px; font-weight: 600; }
-  .sr-diag-pos-dot { width: 7px; height: 7px; border-radius: 50%; background: #6b7280; }
-  .sr-diag-pos-dot.fw { background: var(--sr-accent); }
-  .sr-diag-pos-dot.mf { background: #38bdf8; }
-  .sr-diag-pos-dot.df { background: #818cf8; }
-  .sr-diag-pos-dot.gk { background: var(--sr-red); }
-  .sr-diag-gain { display: inline-flex; align-items: center; padding: 2px 6px; border: 1px solid;
-    border-radius: 3px; font-weight: 700; }
-  .sr-diag-gain.up { color: var(--sr-green); background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.32); }
-  .sr-diag-gain.dn { color: var(--sr-red); background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.32); }
-  .sr-diag-error-track { display: block; width: 72px; height: 5px; margin-left: auto; overflow: hidden;
-    border-radius: 99px; background: #0e1012; }
-  .sr-diag-error-fill { display: block; height: 100%; border-radius: inherit; background: #8b949e; }
-  .sr-diag-error-fill.good { background: var(--sr-green); }
-  .sr-diag-error-fill.bad { background: var(--sr-red); }
-  .sr-worked { display: grid; gap: 10px; width: 100%; }
-  #diag-worked > .sr-note-box { padding: 0 0 16px; margin: 0 !important; border-bottom: 1px solid var(--sr-line);
-    font-family: "JetBrains Mono", var(--sr-tab); line-height: 1.6; }
-  .sr-worked-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'label note' 'value note' 'bar bar';
-    gap: 5px 12px; padding: 14px; background: #14171a; border: 1px solid var(--sr-line); border-radius: 4px;
-    font-size: 12px; color: var(--sr-muted); }
-  .sr-worked-label { grid-area: label; font-family: "JetBrains Mono", var(--sr-tab); font-size: 10.5px; line-height: 1.35;
-    letter-spacing: .055em; text-transform: uppercase; }
-  .sr-worked-row .sr-note-box { grid-area: note; align-self: center; text-align: right; white-space: nowrap;
-    padding: 2px 6px; border: 1px solid var(--sr-line); border-radius: 3px; font-family: "JetBrains Mono", var(--sr-tab); font-size: 10.5px; }
-  .sr-worked-row .sr-note-box:empty { display: none; }
-  .sr-worked-val { grid-area: value; font-family: "JetBrains Mono", var(--sr-tab); font-variant-numeric: tabular-nums; font-size: 23px;
-    line-height: 1.05; font-weight: 600; color: #fff; white-space: nowrap; }
-  .sr-worked-bar { grid-area: bar; height: 4px; overflow: hidden; border-radius: 99px; background: #0e1012; }
-  .sr-worked-bar > span { display: block; height: 100%; border-radius: inherit; background: #8b949e; }
-  .sr-worked-row--blind .sr-worked-bar > span { background: var(--sr-red); }
-  .sr-worked-row--blind .sr-worked-val, .sr-worked-row--blind .sr-note-box { color: #d1d5db; }
-  .sr-worked-row--full { border-color: rgba(74,222,128,.35); background: rgba(74,222,128,.035); }
-  .sr-worked-row--full .sr-worked-label, .sr-worked-row--full .sr-worked-val,
-  .sr-worked-row--full .sr-note-box { color: var(--sr-green); }
-  .sr-worked-row--full .sr-worked-bar > span { background: var(--sr-green); }
-  .sr-off-good { color: var(--sr-green); }
-  .sr-off-bad { color: var(--sr-red); }
-  @media (max-width: 860px) {
-    .sr-diag-row--summary, .sr-diag-row--evidence { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 540px) {
-    .sr-diag-content { padding: 34px 16px 24px; }
-    .sr-diag-title { font-size: 48px; }
-    .sr-diag-row { gap: 28px; margin-bottom: 32px; }
-    .sr-diag-callout { padding: 18px; }
-  }
+
 </style>
 </head>
 <body>
@@ -447,7 +370,6 @@ body { background: #0e1012; }
     <button data-tab="register"><i>&#8984;2</i> VALUATIONS REGISTER</button>
     <button data-tab="arbitrage"><i>&#8984;3</i> ARBITRAGE DESK</button>
     <button data-tab="squad"><i>&#8984;4</i> SQUAD COMPARISON</button>
-    <button data-tab="diagnostics"><i>&#8984;5</i> MODEL DIAGNOSTICS</button>
   </nav>
 
   <div class="sr-kpis" data-source="players accuracy" id="sr-kpis">
@@ -466,15 +388,20 @@ body { background: #0e1012; }
       <div class="sr-kpi-val" id="k-gap">—</div>
       <div class="sr-kpi-foot"><span id="k-gap-team">—</span><span id="k-gap-amt">—</span></div>
     </div>
-    <div class="sr-kpi" id="k-acc-tile" style="cursor:pointer" title="Open Model Diagnostics for the full breakdown">
-      <div class="sr-kpi-top"><span class="sr-kpi-lab">Right Often Enough to Trust?</span><span class="sr-kpi-tag">BACKTEST</span></div>
+    <div class="sr-kpi" id="k-acc-tile" tabindex="0">
+      <div class="sr-kpi-top"><span class="sr-kpi-lab">Right Often Enough to Trust?</span><span class="sr-kpi-tag">BLIND TEST</span></div>
       <div class="sr-kpi-val" id="k-acc-within">—</div>
       <div style="font-size:12.5px; color:var(--sr-muted2); margin:-4px 0 8px">
-        of valuations land within 30% of the real price
+        of players priced close enough to trust &mdash; tap to see how we tested that
       </div>
       <div class="sr-kpi-foot">
-        <span>typical miss: <b id="k-acc" style="color:#fff">—</b></span>
-        <span id="k-acc-n">— &rarr;</span>
+        <span>average miss: <b id="k-acc" style="color:#fff">—</b></span>
+        <span id="k-acc-n">—</span>
+      </div>
+      <div class="sr-kpi-pop" id="k-acc-pop" hidden>
+        <div class="sr-kpi-pop-head">What this means</div>
+        <p class="sr-kpi-pop-line" id="k-acc-pop-acc">—</p>
+        <p class="sr-kpi-pop-line" id="k-acc-pop-ex">—</p>
       </div>
     </div>
   </div>
@@ -672,79 +599,6 @@ body { background: #0e1012; }
     </div>
     <div class="sr-chips" id="squad-chips"></div>
     <div class="sr-squad-grid" id="squad-grid"></div>
-  </div>
-
-  <div class="sr-panel" id="panel-diagnostics" hidden>
-  <div class="sr-diag-content">
-    <div class="sr-diag-sec">
-      <div class="sr-diag-title">Can you trust the number?</div>
-      <p class="sr-diag-sec-sub">Everything below comes from a completed season held out of training entirely
-        &mdash; the models were fit on earlier seasons only, then asked to price this one cold. These are prices
-        for players they had never seen.</p>
-    </div>
-
-    <div class="sr-diag-row sr-diag-row--summary">
-      <div class="sr-diag-cell">
-        <div class="sr-diag-sec-head">What those two attempts look like for one player</div>
-        <div class="sr-worked" id="diag-worked"></div>
-      </div>
-      <div class="sr-diag-cell">
-        <div class="sr-diag-sec-head">Accuracy by position</div>
-        <p class="sr-diag-sec-sub">Each position gets its own model. The gap between pricing a player blind
-          (age, minutes, club only) and pricing him with his own statistics is what those statistics are worth.</p>
-        <div class="sr-diag-table-wrap">
-          <div class="sr-scroll">
-            <table class="sr-table" id="diag-table">
-              <colgroup>
-                <col style="width:22%"><col style="width:13%"><col style="width:18%">
-                <col style="width:20%"><col style="width:15%"><col style="width:12%">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>POSITION</th>
-                  <th class="num">N TESTED</th>
-                  <th class="num">ERROR, BLIND</th>
-                  <th class="num">ERROR, WITH STATS</th>
-                  <th class="num">GAIN (PTS)</th>
-                  <th class="num">R&sup2;</th>
-                </tr>
-              </thead>
-              <tbody id="diag-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="sr-diag-row sr-diag-row--evidence">
-      <div class="sr-diag-cell">
-        <div class="sr-diag-sec-head">Judge it yourself</div>
-        <p class="sr-diag-sec-sub">What the model said about players you know, before it saw that season.</p>
-        <div class="sr-diag-table-wrap">
-          <div class="sr-scroll">
-            <table class="sr-table" id="diag-examples">
-              <colgroup>
-                <col style="width:38%"><col style="width:16%"><col style="width:16%"><col style="width:14%"><col style="width:16%">
-              </colgroup>
-              <thead>
-                <tr><th>PLAYER</th><th class="num">MARKET</th><th class="num">MODEL</th><th class="num">OFF BY</th><th class="num">ERROR</th></tr>
-              </thead>
-              <tbody id="diag-examples-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="sr-diag-cell">
-        <div class="sr-diag-sec-head">Worth keeping in mind</div>
-        <div class="sr-diag-callout">
-          <div class="sr-diag-callout-title">Methodology &amp; limitations</div>
-          <div class="sr-diag-callout-copy">Market values are Transfermarkt estimates, not transfer fees. Statistics from FotMob.
-            A model trained to minimise error will still miss low on breakout teenagers and high on ageing veterans
-            &mdash; it has no way to see potential or decline before the numbers show it.</div>
-        </div>
-      </div>
-    </div>
-  </div>
   </div>
 
   <div class="sr-overlay" id="sr-overlay"></div>
@@ -1552,89 +1406,26 @@ body { background: #0e1012; }
     }
   }
 
-  // ------------------------------------------------------------- model diagnostics --
-  function fillDiagnostics() {
-    const d = rows('worked_example')[0];
-    const worked = el('diag-worked');
-    worked.replaceChildren();
-    if (d) {
-      const market = N(d.market_m), basic = N(d.basic_m), model = N(d.model_m);
-      const offBasic = N(d.off_basic);
-      const offFull = N(d.off_full);
-      const title = document.createElement('p'); title.className = 'sr-note-box'; title.style.marginBottom = '10px';
-      title.innerHTML = `<b style="color:#fff">${d.player}</b>, ${d.team}, `
-        + `${d.age != null ? Math.round(N(d.age)) : '—'} years old &mdash; ${d.season}, a season neither attempt had seen.`;
-      worked.appendChild(title);
-      const row = (label, val, note, kind) => {
-        const r = document.createElement('div'); r.className = `sr-worked-row sr-worked-row--${kind}`;
-        const l = document.createElement('span'); l.className = 'sr-worked-label'; l.textContent = label;
-        const v = document.createElement('span'); v.className = 'sr-worked-val';
-        v.textContent = money(val);
-        const n = document.createElement('span'); n.className = 'sr-note-box'; n.textContent = note || '';
-        const bar = document.createElement('div'); bar.className = 'sr-worked-bar';
-        const fill = document.createElement('span');
-        const relativeValue = market > 0 && val != null ? (N(val) / market) * 50 : 50;
-        fill.style.width = `${Math.max(8, Math.min(100, relativeValue))}%`;
-        bar.appendChild(fill);
-        r.append(l, v, n, bar);
-        return r;
-      };
-      worked.appendChild(row('The market says he is worth', market, '', 'market'));
-      worked.appendChild(row('Knowing only age, minutes and club', basic,
-        offBasic != null ? `${offBasic.toFixed(0)}% out` : '', 'blind'));
-      worked.appendChild(row('Knowing what he does on the pitch too', model,
-        offFull != null ? `${offFull.toFixed(0)}% out` : '', 'full'));
-    }
+  // ------------------------------------------------------------- accuracy popover --
+  function fillAccPop() {
+    const acc = rows('accuracy').find((a) => a.pos === 'ALL');
+    el('k-acc-pop-acc').textContent = acc
+      ? `Before we trusted it, we hid a whole season from the model and had it price players it had `
+        + `never seen before — no cheating by looking at the answer first. About ${acc.within30_display || '—'} `
+        + `of those guesses landed within 30% of the real price. Think of it as a solid starting estimate, `
+        + `not the final word.`
+      : 'No test result on record.';
 
-    const accTbody = el('diag-tbody');
-    accTbody.replaceChildren();
-    const accRows = rows('accuracy').filter((a) => a.pos !== 'ALL');
-    for (const a of accRows) {
-      const tr = document.createElement('tr');
-      const c1 = document.createElement('td');
-      const pos = document.createElement('span'); pos.className = 'sr-diag-pos';
-      const dot = document.createElement('i'); dot.className = `sr-diag-pos-dot ${String(a.pos || '').toLowerCase()}`;
-      const label = document.createElement('span'); label.textContent = a.pos_label || a.pos;
-      pos.append(dot, label); c1.appendChild(pos);
-      const c2 = document.createElement('td'); c2.className = 'num tabular'; c2.textContent = a.n ?? '—';
-      const c3 = document.createElement('td'); c3.className = 'num tabular';
-      c3.textContent = a.err_nostats != null ? `${N(a.err_nostats).toFixed(1)}%` : '—';
-      const c4 = document.createElement('td'); c4.className = 'num tabular';
-      c4.textContent = a.err_withstats != null ? `${N(a.err_withstats).toFixed(1)}%` : '—';
-      const c5 = document.createElement('td'); c5.className = 'num tabular';
-      const gain = N(a.gain);
-      if (gain != null) {
-        const gainChip = document.createElement('span');
-        gainChip.className = `sr-diag-gain ${gain >= 0 ? 'up' : 'dn'}`;
-        gainChip.textContent = `${gain > 0 ? '+' : ''}${gain.toFixed(1)}`;
-        c5.appendChild(gainChip);
-      } else c5.textContent = '—';
-      const c6 = document.createElement('td'); c6.className = 'num tabular';
-      c6.textContent = a.r2 != null ? N(a.r2).toFixed(3) : '—';
-      tr.append(c1, c2, c3, c4, c5, c6);
-      accTbody.appendChild(tr);
-    }
-
-    const exTbody = el('diag-examples-tbody');
-    exTbody.replaceChildren();
-    for (const r of rows('examples')) {
-      const tr = document.createElement('tr');
-      const name = document.createElement('td');
-      name.innerHTML = `${r.player}<div class="sr-name-sub">${r.team} · ${r.pos}</div>`;
-      const mkt = document.createElement('td'); mkt.className = 'num tabular'; mkt.textContent = money(N(r.market_m));
-      const mdl = document.createElement('td'); mdl.className = 'num tabular'; mdl.textContent = money(N(r.model_m));
-      const off = document.createElement('td'); off.className = 'num tabular';
-      const v = N(r.off_pct) ?? 0;
-      off.textContent = Math.round(v) + '%';
-      off.className += v <= 20 ? ' sr-off-good' : (v >= 45 ? ' sr-off-bad' : '');
-      const error = document.createElement('td'); error.className = 'num';
-      const track = document.createElement('span'); track.className = 'sr-diag-error-track';
-      const fill = document.createElement('span');
-      fill.className = `sr-diag-error-fill${v <= 20 ? ' good' : (v >= 45 ? ' bad' : '')}`;
-      fill.style.width = `${Math.max(4, Math.min(100, v))}%`;
-      track.appendChild(fill); error.appendChild(track);
-      tr.append(name, mkt, mdl, off, error);
-      exTbody.appendChild(tr);
+    const ex = rows('worked_example')[0] || rows('examples')[0];
+    const line = el('k-acc-pop-ex');
+    if (ex) {
+      const market = N(ex.market_m), model = N(ex.model_m);
+      const off = N(ex.off_full) ?? N(ex.off_pct);
+      line.innerHTML = `For example: <b>${ex.player}</b> was really valued at ${money(market)}. Having never `
+        + `priced him before, the model's guess was ${money(model)}`
+        + `${off != null ? ` &mdash; about ${Math.round(off)}% off the mark` : ''}.`;
+    } else {
+      line.textContent = '';
     }
   }
 
@@ -1716,7 +1507,7 @@ body { background: #0e1012; }
     fillArbLists();
     fillOverview();
     fillSquad();
-    fillDiagnostics();
+    fillAccPop();
     if (chosen) {
       const r = FILTERED.find((x) => x.id === chosen) || ALL.find((x) => x.id === chosen);
       if (r) openDrawer(r);
@@ -1732,10 +1523,19 @@ body { background: #0e1012; }
     const b = e.target.closest('button[data-tab]'); if (!b) return;
     showTab(b.dataset.tab);
   });
-  el('k-acc-tile').addEventListener('click', () => showTab('diagnostics'));
   document.querySelectorAll('[data-goto]').forEach((b) => {
     b.addEventListener('click', () => showTab(b.dataset.goto));
   });
+
+  const accTile = el('k-acc-tile'), accPop = el('k-acc-pop');
+  const setAccPop = (open) => { accPop.hidden = !open; };
+  accTile.addEventListener('mouseenter', () => setAccPop(true));
+  accTile.addEventListener('mouseleave', () => setAccPop(false));
+  accTile.addEventListener('click', (e) => { e.stopPropagation(); setAccPop(accPop.hidden); });
+  accTile.addEventListener('focus', () => setAccPop(true));
+  accTile.addEventListener('blur', () => setAccPop(false));
+  accTile.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setAccPop(false); accTile.blur(); } });
+  document.addEventListener('click', () => setAccPop(false));
 
   posSeg.addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
