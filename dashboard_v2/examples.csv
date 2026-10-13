@@ -1,0 +1,15 @@
+player,team,league,pos,age,season,market_m,model_m,off_pct
+Erling Haaland,Manchester City,Premier League,FW,25.2,2025/26,200.0,156.9,22.0
+Lamine Yamal,Barcelona,La Liga,FW,18.2,2025/26,200.0,223.5,12.0
+Kylian Mbappé,Real Madrid,La Liga,FW,26.7,2025/26,180.0,206.3,15.0
+Pedri,Barcelona,La Liga,MF,22.8,2025/26,150.0,117.7,22.0
+Michael Olise,Bayern München,Bundesliga,FW,23.8,2025/26,150.0,167.9,12.0
+João Neves,Paris Saint-Germain,Ligue 1,MF,21.0,2025/26,140.0,64.3,54.0
+Vinícius Júnior,Real Madrid,La Liga,FW,25.2,2025/26,140.0,181.1,29.0
+Khvicha Kvaratskhelia,Paris Saint-Germain,Ligue 1,FW,24.6,2025/26,140.0,81.1,42.0
+Jude Bellingham,Real Madrid,La Liga,MF,22.2,2025/26,130.0,113.5,13.0
+Declan Rice,Arsenal,Premier League,MF,26.7,2025/26,120.0,113.7,5.0
+Bart Verbruggen,Brighton and Hove Albion,Premier League,GK,23.1,2025/26,40.0,44.8,12.0
+Gregor Kobel,Borussia Dortmund,Bundesliga,GK,27.8,2025/26,40.0,20.0,50.0
+Michael Kayode,Brentford,Premier League,DF,21.2,2025/26,40.0,43.3,8.0
+Ezri Konsa,Aston Villa,Premier League,DF,27.9,2025/26,40.0,26.2,34.0

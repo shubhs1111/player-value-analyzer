@@ -1,0 +1,1628 @@
+<style>
+  #dash-root { --dash-gutter: 0; }
+
+  .sr { font-family: var(--sr-mono); color: var(--sr-fg); background: var(--sr-bg);
+    --sr-bg: #0e1012; --sr-bg2: #121417; --sr-panel: #14171a; --sr-panel2: #101214;
+    --sr-line: #262a30; --sr-line2: #1e2227; --sr-fg: #e5e5e7; --sr-fg2: #f4f4f0;
+    --sr-muted: #9ba1ad; --sr-muted2: #717680; --sr-muted3: #595f6c;
+    --sr-accent: #e5983b; --sr-accent-ink: #1a0f00; --sr-green: #4ade80; --sr-red: #f87171;
+    --sr-mono: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sr-serif: Georgia, "Times New Roman", serif;
+    --sr-tab: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 17px; -webkit-font-smoothing: antialiased;
+  }
+  .sr * { box-sizing: border-box; }
+  .sr table { font-family: var(--sr-mono); }
+  .sr .tabular, .sr .sr-table td.num, .sr .sr-table th.num { font-family: var(--sr-tab); }
+  .sr a { color: inherit; }
+  .sr ::selection { background: rgba(229,152,59,.25); }
+  .sr .tabular { font-variant-numeric: tabular-nums; }
+  .sr svg.icon { width: 14px; height: 14px; vertical-align: -2px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+  /* ---------- ticker ---------- */
+  .sr-ticker { background: var(--sr-bg2); border-bottom: 1px solid var(--sr-line);
+    display: flex; align-items: center; gap: 18px; padding: 6px 16px; overflow-x: auto;
+    white-space: nowrap; font-size: 12.5px; color: var(--sr-muted2); letter-spacing: .02em; }
+  .sr-ticker b { color: #fff; font-weight: 600; }
+  .sr-ticker .up { color: var(--sr-green); }
+  .sr-ticker .dn { color: var(--sr-red); }
+  .sr-ticker .live { color: var(--sr-accent); font-weight: 600; display: flex; align-items: center; gap: 6px;
+    padding-right: 14px; border-right: 1px solid var(--sr-line); flex: none; }
+  .sr-ticker .live i { width: 6px; height: 6px; background: var(--sr-accent); display: inline-block;
+    border-radius: 50%; animation: sr-pulse 1.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .sr-ticker .live i { animation: none; } }
+  @keyframes sr-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  .sr-ticker .seg { display: flex; align-items: center; gap: 6px; flex: none; }
+  .sr-ticker .sep { color: var(--sr-line); flex: none; }
+
+  /* ---------- masthead ---------- */
+  .sr-head { background: #14171a; border-bottom: 1px solid var(--sr-line); padding: 14px 16px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .sr-head-left { display: flex; align-items: center; gap: 14px; }
+  .sr-mark { width: 30px; height: 30px; background: #1e2227; border: 1px solid #323740;
+    display: flex; align-items: center; justify-content: center; color: var(--sr-accent);
+    font-weight: 700; font-size: 12.5px; flex: none; }
+  .sr-title { font-family: var(--sr-serif); font-size: 22px; font-weight: 600; letter-spacing: .01em;
+    color: var(--sr-fg2); text-transform: uppercase; margin: 0; }
+  .sr-sub { font-size: 12px; color: #8e95a2; text-transform: uppercase; letter-spacing: .03em; margin: 2px 0 0; }
+  .sr-head-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sr-search-wrap { position: relative; }
+  .sr-search { background: var(--sr-bg); border: 1px solid var(--sr-line); color: var(--sr-fg);
+    font-family: inherit; font-size: 14px; padding: 7px 10px; width: 230px; }
+  .sr-search::placeholder { color: #595f6c; }
+  .sr-search:focus { outline: none; border-color: var(--sr-accent); }
+  .sr-btn { background: #181b1f; color: #d1d5db; border: 1px solid var(--sr-line); font-family: inherit;
+    font-size: 13px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer; letter-spacing: .02em; }
+  .sr-btn:hover { background: #22262c; border-color: #383e47; }
+  .sr-btn-accent { background: var(--sr-accent); color: var(--sr-accent-ink); border-color: var(--sr-accent);
+    font-weight: 700; }
+  .sr-btn-accent:hover { background: #d4882e; }
+
+  /* ---------- kpi strip ---------- */
+  .sr-kpis { display: grid; grid-template-columns: repeat(4, 1fr); background: #14171a;
+    border: 1px solid var(--sr-line); margin: 16px; }
+  .sr-kpi { padding: 16px; border-right: 1px solid var(--sr-line); min-width: 0; }
+  .sr-kpi:last-child { border-right: none; }
+  .sr-kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
+  .sr-kpi-lab { font-family: var(--sr-serif); font-style: italic; font-size: 14px; color: var(--sr-muted); }
+  .sr-kpi-tag { font-size: 11px; color: var(--sr-muted2); border: 1px solid var(--sr-line); padding: 1px 4px;
+    white-space: nowrap; }
+  .sr-kpi-val { font-size: 25.5px; font-weight: 600; color: var(--sr-fg2); margin-bottom: 8px; line-height: 1.15; }
+  .sr-kpi-val small { font-size: 14px; color: var(--sr-muted2); font-weight: 400; }
+  .sr-kpi-foot { display: flex; align-items: center; justify-content: space-between; font-size: 12px;
+    color: var(--sr-muted2); padding-top: 8px; border-top: 1px solid var(--sr-line2); }
+
+  /* ---------- filter console ---------- */
+  .sr-console { background: #14171a; border: 1px solid var(--sr-line); margin: 0 16px 16px;
+    padding: 10px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; }
+  .sr-console-lab { color: var(--sr-muted2); text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
+  .sr-seg { display: flex; border: 1px solid var(--sr-line); }
+  .sr-seg button { background: #181b1f; color: #a8b1bd; border: none; border-right: 1px solid var(--sr-line);
+    font-family: inherit; font-size: 13px; padding: 5px 10px; cursor: pointer; }
+  .sr-seg button:last-child { border-right: none; }
+  .sr-seg button:hover { background: #22262c; }
+  .sr-seg button.on { background: var(--sr-accent); color: var(--sr-accent-ink); font-weight: 700; }
+  .sr-sel { background: #181b1f; color: #d1d5db; border: 1px solid var(--sr-line); font-family: inherit;
+    font-size: 13px; padding: 5px 7px; cursor: pointer; }
+  .sr-sel:focus { outline: none; border-color: var(--sr-accent); }
+  .sr-check { display: flex; align-items: center; gap: 5px; color: #a8b1bd; cursor: pointer; user-select: none; }
+  .sr-check input { accent-color: var(--sr-accent); }
+  .sr-count { color: var(--sr-muted2); font-size: 12.5px; margin-left: auto; }
+  .sr-count b { color: #fff; }
+  .sr-reset { color: var(--sr-accent); background: none; border: none; font-family: inherit; font-size: 12.5px;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 0; }
+  .sr-reset:hover { color: #ffdcbc; }
+
+  /* ---------- table ---------- */
+  .sr-tablewrap { background: #14171a; border: 1px solid var(--sr-line); margin: 0 16px 16px; overflow: hidden; }
+  .sr-scroll { overflow-x: auto; }
+  .sr-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+  .sr-table thead tr { background: #101214; border-bottom: 1px solid var(--sr-line); }
+  .sr-table th { padding: 9px 10px; font-weight: 600; font-size: 11px; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--sr-muted2); white-space: nowrap; }
+  .sr-table th.num, .sr-table td.num { text-align: right; }
+  .sr-table th.ctr, .sr-table td.ctr { text-align: center; }
+  .sr-table th.sortable { cursor: pointer; user-select: none; }
+  .sr-table th.sortable:hover { color: var(--sr-fg); }
+  .sr-table th .arrow { color: var(--sr-accent); margin-left: 3px; }
+  .sr-table tbody tr { border-bottom: 1px solid var(--sr-line2); cursor: pointer; }
+  .sr-table tbody tr:hover { background: #181b1f; }
+  .sr-table td { padding: 7px 10px; color: var(--sr-fg); vertical-align: middle; }
+  .sr-row-name { display: flex; align-items: center; gap: 9px; }
+  .sr-avatar { width: 26px; height: 26px; border: 1px solid var(--sr-line); background: #1e2227;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+    color: var(--sr-accent); flex: none; }
+  .sr-name-main { font-family: var(--sr-serif); font-weight: 600; color: #fff; line-height: 1.2;
+    font-size: 14.5px; }
+  .sr-table tbody tr:hover .sr-name-main { color: var(--sr-accent); }
+  .sr-name-sub { font-size: 11.5px; color: var(--sr-muted2); margin-top: 1px; }
+  .sr-pos-chip { border: 1px solid var(--sr-line); padding: 1px 5px; font-size: 11.5px; display: inline-block; }
+  .sr-dev { display: inline-block; padding: 2px 6px; font-size: 11.5px; border: 1px solid; white-space: nowrap; }
+  .sr-dev-up { color: var(--sr-green); border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.05); }
+  .sr-dev-dn { color: var(--sr-red); border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.05); }
+  .sr-dev-fl { color: var(--sr-muted); border-color: #383e47; }
+  .sr-conf { display: inline-flex; align-items: center; gap: 6px; }
+  .sr-conf-track { width: 46px; height: 5px; background: var(--sr-line); overflow: hidden; }
+  .sr-conf-fill { height: 100%; background: var(--sr-accent); }
+  .sr-chev { color: var(--sr-muted2); }
+  .sr-table tbody tr:hover .sr-chev { color: #fff; }
+  .sr-empty { padding: 36px 16px; text-align: center; color: var(--sr-muted2); }
+
+  /* ---------- footer / pagination ---------- */
+  .sr-foot { background: #101214; border-top: 1px solid var(--sr-line); padding: 9px 14px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 12.5px; color: var(--sr-muted2); }
+  .sr-page-btns { display: flex; align-items: center; gap: 4px; }
+  .sr-page-btns button { padding: 4px 9px; background: #181b1f; border: 1px solid var(--sr-line);
+    color: var(--sr-fg); font-family: inherit; font-size: 12.5px; cursor: pointer; }
+  .sr-page-btns button:hover:not(:disabled) { background: #22262c; }
+  .sr-page-btns button:disabled { color: var(--sr-muted3); cursor: not-allowed; }
+  .sr-page-btns button.on { background: var(--sr-accent); color: var(--sr-accent-ink); font-weight: 700;
+    border-color: var(--sr-accent); }
+
+  /* ---------- note ---------- */
+  .sr-note { margin: 0 16px 20px; font-size: 12.5px; color: var(--sr-muted2); line-height: 1.6; }
+  .sr-note b { color: var(--sr-muted); }
+
+  /* ---------- drawer ---------- */
+  .sr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 40; opacity: 0;
+    pointer-events: none; transition: opacity .15s; }
+  .sr-overlay.open { opacity: 1; pointer-events: auto; }
+  .sr-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 480px;
+    background: #14171a; border-left: 1px solid var(--sr-line); z-index: 41; transform: translateX(100%);
+    transition: transform .18s ease-out; display: flex; flex-direction: column; font-family: var(--sr-mono); }
+  .sr-drawer.open { transform: translateX(0); }
+  .sr-d-head { padding: 14px; background: #101214; border-bottom: 1px solid var(--sr-line);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: none; }
+  .sr-d-head-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .sr-d-avatar { width: 38px; height: 38px; border: 1px solid var(--sr-line); background: #181b1f;
+    display: flex; align-items: center; justify-content: center; color: var(--sr-accent); font-weight: 700;
+    font-size: 14px; flex: none; }
+  .sr-d-name { font-family: var(--sr-serif); font-weight: 600; font-size: 17px; color: #fff; }
+  .sr-d-sub { font-size: 12px; color: var(--sr-muted2); margin-top: 1px; }
+  .sr-d-close { background: none; border: 1px solid transparent; color: var(--sr-muted2); cursor: pointer;
+    padding: 4px; flex: none; }
+  .sr-d-close:hover { color: #fff; border-color: var(--sr-line); background: #22262c; }
+  .sr-d-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .sr-d-box { border: 1px solid var(--sr-line); background: #101214; padding: 12px; }
+  .sr-d-box-head { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px;
+    color: var(--sr-muted2); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+  .sr-d-sec-lab { background: #181b1f; font-size: 11px; color: var(--sr-muted2); text-transform: uppercase;
+    letter-spacing: .04em; padding: 7px 9px; border: 1px solid var(--sr-line); border-bottom: none; }
+  .sr-bar-row { display: grid; grid-template-columns: 5.5rem 1fr; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .sr-bar-lab { font-size: 12px; color: var(--sr-muted2); }
+  .sr-bar-track { position: relative; height: 24px; background: var(--sr-line); }
+  .sr-bar-fill { position: absolute; top: 0; bottom: 0; left: 0; }
+  .sr-bar-val { position: absolute; top: 50%; transform: translateY(-50%); left: 8px; font-size: 12.5px;
+    font-weight: 600; color: #fff; white-space: nowrap; }
+  .sr-bar-val.out { color: var(--sr-fg); }
+  .sr-axis { position: relative; height: 14px; margin-left: 5.5rem; }
+  .sr-axis span { position: absolute; top: 2px; font-size: 11px; color: var(--sr-muted3); transform: translateX(-50%); }
+  .sr-d-list { border: 1px solid var(--sr-line); border-top: none; }
+  .sr-d-row { padding: 9px; display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--sr-line2); }
+  .sr-d-row:last-child { border-bottom: none; }
+  .sr-d-row span:first-child { color: var(--sr-muted2); }
+  .sr-d-row span:last-child { color: #fff; font-weight: 600; }
+  .sr-why-chip { display: inline-flex; align-items: baseline; gap: 5px; padding: 3px 8px; border: 1px solid var(--sr-line);
+    font-size: 12px; margin: 0 5px 5px 0; }
+  .sr-why-up { color: var(--sr-green); }
+  .sr-why-dn { color: var(--sr-red); }
+  .sr-stat { margin-bottom: 10px; }
+  .sr-stat-top { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+  .sr-stat-top span:first-child { color: var(--sr-fg); }
+  .sr-stat-top span:last-child { color: var(--sr-muted2); }
+  .sr-pct-track { position: relative; height: 7px; background: var(--sr-line); }
+  .sr-pct-fill { height: 100%; }
+  .sr-d-warn { border: 1px solid rgba(248,113,113,.4); background: rgba(248,113,113,.07); color: #ffb4ab;
+    padding: 9px 11px; font-size: 12px; line-height: 1.5; }
+  #d-stats { position: relative; }
+  .sr-tip { position: absolute; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: var(--sr-panel2); border: 1px solid var(--sr-line); padding: 8px 10px;
+    font-size: 12px; line-height: 1.5; max-width: 220px; color: var(--sr-muted); z-index: 5; }
+  .sr-tip-head { color: var(--sr-accent); margin-bottom: 3px; font-weight: 700; }
+  .sr-note-box { font-size: 12px; color: var(--sr-muted2); line-height: 1.6; }
+  .sr-note-box .lab { color: var(--sr-accent); font-weight: 700; font-size: 11px; text-transform: uppercase;
+    display: block; margin-bottom: 4px; letter-spacing: .04em; }
+  .sr-d-foot { padding: 10px; border-top: 1px solid var(--sr-line); background: #101214; flex: none; }
+  .sr-d-foot button { width: 100%; padding: 9px; background: #181b1f; border: 1px solid var(--sr-line);
+    color: #a8b1bd; font-family: inherit; font-size: 13px; cursor: pointer; }
+  .sr-d-foot button:hover { background: #22262c; }
+
+  [data-dash-source-state=refreshing] .sr-tablewrap,
+  [data-dash-source-state=refreshing] .sr-kpis { opacity: .5; transition: opacity .25s; }
+
+  /* ---------- arbitrage desk ---------- */
+  .sr-arb { margin: 0 16px 16px; }
+  .sr-arb-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 10px; }
+  .sr-arb-title { font-family: var(--sr-serif); font-size: 17px; color: var(--sr-fg2); font-weight: 600; }
+  .sr-arb-sub { font-size: 12px; color: var(--sr-muted2); }
+  .sr-arb-console { background: #14171a; border: 1px solid var(--sr-line); padding: 9px 12px;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 12px; }
+  .sr-arb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 760px) { .sr-arb-grid { grid-template-columns: 1fr; } }
+  .sr-arb-card { background: #14171a; border: 1px solid var(--sr-line); min-width: 0; }
+  .sr-arb-card-head { padding: 10px 12px; border-bottom: 1px solid var(--sr-line); display: flex;
+    align-items: center; justify-content: space-between; gap: 8px; }
+  .sr-arb-card-lab { font-size: 12.5px; font-weight: 700; letter-spacing: .03em; }
+  .sr-arb-card-lab.up { color: var(--sr-green); }
+  .sr-arb-card-lab.dn { color: var(--sr-red); }
+  .sr-arb-card-n { font-size: 11.5px; color: var(--sr-muted2); }
+  .sr-arb-row { padding: 8px 12px; display: grid; grid-template-columns: 1.5rem 1fr auto;
+    gap: 8px; align-items: center; border-bottom: 1px solid var(--sr-line2); cursor: pointer; }
+  .sr-arb-row:last-child { border-bottom: none; }
+  .sr-arb-row:hover { background: #181b1f; }
+  .sr-arb-rank { color: var(--sr-muted2); font-size: 12.5px; }
+  .sr-arb-name { font-family: var(--sr-serif); font-weight: 600; color: #fff; font-size: 14px; }
+  .sr-arb-row:hover .sr-arb-name { color: var(--sr-accent); }
+  .sr-arb-sub2 { font-size: 11.5px; color: var(--sr-muted2); margin-top: 1px; }
+  .sr-arb-num { text-align: right; font-size: 12.5px; }
+  .sr-arb-flow { color: var(--sr-fg); white-space: nowrap; }
+  .sr-arb-gap { font-size: 11.5px; margin-top: 2px; }
+  .sr-arb-gap.up { color: var(--sr-green); }
+  .sr-arb-gap.dn { color: var(--sr-red); }
+  .sr-arb-note { padding: 10px 12px; font-size: 12px; color: var(--sr-muted2); line-height: 1.5; }
+  .sr-arb-empty { padding: 20px 12px; text-align: center; color: var(--sr-muted2); font-size: 12.5px; }
+
+  /* ---------- key stats cell ---------- */
+  .sr-key { font-size: 11.5px; line-height: 1.5; white-space: nowrap; }
+  .sr-key b { color: var(--sr-fg); font-weight: 600; }
+  .sr-key span { color: var(--sr-muted2); }
+
+  /* ---------- tab nav ---------- */
+  .sr-nav { background: var(--sr-bg2); border-bottom: 1px solid var(--sr-line); display: flex;
+    align-items: center; overflow-x: auto; }
+  .sr-nav button { background: none; border: none; border-right: 1px solid var(--sr-line);
+    border-top: 2px solid transparent; color: var(--sr-muted2); font-family: inherit; font-size: 13px;
+    padding: 10px 16px; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 7px; }
+  .sr-nav button:hover { color: var(--sr-fg); background: #181b1f; }
+  .sr-nav button.on { color: var(--sr-accent); background: #181b1f; border-top-color: var(--sr-accent);
+    font-weight: 700; }
+  .sr-nav button i { color: var(--sr-muted3); font-style: normal; }
+  .sr-nav button.on i { color: var(--sr-accent); }
+  .sr-panel[hidden] { display: none; }
+
+  /* ---------- overview ---------- */
+  .sr-ov-hero { margin: 4px 16px 20px; }
+  .sr-ov-h1 { font-family: var(--sr-serif); font-weight: 400; font-size: 27px; color: var(--sr-fg2);
+    margin: 0 0 10px; line-height: 1.25; }
+  .sr-ov-lead { font-size: 15.5px; color: var(--sr-muted); line-height: 1.65; margin: 0; }
+  .sr-ov-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 12px; margin: 0 16px 20px; }
+  .sr-ov-step { background: #14171a; border: 1px solid var(--sr-line); padding: 14px; }
+  .sr-ov-step-n { font-family: var(--sr-serif); font-size: 19px; color: var(--sr-accent); display: block;
+    margin-bottom: 4px; }
+  .sr-ov-step h3 { margin: 0 0 5px; font-size: 14.5px; font-weight: 600; color: var(--sr-fg2); }
+  .sr-ov-step p { margin: 0; font-size: 12.5px; color: var(--sr-muted2); line-height: 1.55; }
+  .sr-ov-section-lab { margin: 0 16px 10px; font-size: 11px; color: var(--sr-muted2); text-transform: uppercase;
+    letter-spacing: .05em; border-top: 1px solid var(--sr-line); padding-top: 18px; }
+
+  /* ---------- squad comparison ---------- */
+  .sr-squad-console { background: #14171a; border: 1px solid var(--sr-line); padding: 10px 12px;
+    margin: 0 16px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; }
+  .sr-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 16px 16px; }
+  .sr-chip { background: #181b1f; border: 1px solid var(--sr-line); color: #a8b1bd; font-family: inherit;
+    font-size: 14px; padding: 6px 11px; cursor: pointer; }
+  .sr-chip:hover { border-color: #383e47; }
+  .sr-chip.on { background: var(--sr-accent); color: var(--sr-accent-ink); font-weight: 700; border-color: var(--sr-accent); }
+  .sr-squad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 14px; margin: 0 16px 16px; }
+  .sr-squad-card { background: #14171a; border: 1px solid var(--sr-line); padding: 14px; }
+  .sr-squad-card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .sr-squad-name { font-family: var(--sr-serif); font-weight: 600; color: #fff; font-size: 18.5px; }
+  .sr-squad-league { font-size: 12.5px; color: var(--sr-muted2); }
+  .sr-squad-stats { display: flex; gap: 16px; font-size: 13px; color: var(--sr-muted2); margin-bottom: 12px;
+    flex-wrap: wrap; }
+  .sr-squad-stats b { color: var(--sr-fg); font-weight: 600; font-size: 14.5px; }
+  .sr-squad-list { border-top: 1px solid var(--sr-line2); margin-top: 12px; padding-top: 10px; }
+  .sr-squad-list-lab { font-size: 11.5px; color: var(--sr-muted2); text-transform: uppercase; letter-spacing: .04em;
+    margin-bottom: 6px; }
+  .sr-squad-prow { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; }
+  .sr-squad-prow span:first-child { color: var(--sr-fg); }
+  .sr-squad-prow span:last-child { color: var(--sr-muted2); font-variant-numeric: tabular-nums; }
+  .sr-squad-empty { margin: 0 16px 16px; padding: 24px; text-align: center; color: var(--sr-muted2);
+    font-size: 12.5px; border: 1px solid var(--sr-line); background: #14171a; }
+
+  /* ---------- diagnostics ---------- */
+  .sr-diag-sec { margin: 0 16px 16px; }
+  .sr-diag-title { font-family: var(--sr-serif); font-size: 18.5px; color: var(--sr-fg2); font-weight: 600;
+    margin-bottom: 4px; }
+  .sr-diag-sec-head { font-family: var(--sr-mono); font-size: 14.5px; color: var(--sr-fg2); font-weight: 700;
+    margin-bottom: 8px; }
+  .sr-diag-sec-sub { font-size: 12px; color: var(--sr-muted2); margin-bottom: 10px; line-height: 1.6; }
+  .sr-diag-row { margin: 0 16px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 760px) { .sr-diag-row { grid-template-columns: 1fr; } }
+  .sr-diag-cell { min-width: 0; height: 100%; box-sizing: border-box; }
+  .sr-diag-callout { background: #14171a; border: 1px solid var(--sr-line); padding: 14px; font-size: 12px;
+    color: var(--sr-muted2); line-height: 1.6; height: 100%; box-sizing: border-box; }
+  .sr-diag-table-wrap { background: #14171a; border: 1px solid var(--sr-line); overflow: hidden; width: 100%;
+    box-sizing: border-box; }
+  #diag-table, #diag-examples { width: 100%; table-layout: fixed; }
+  #diag-table td, #diag-table th, #diag-examples td, #diag-examples th { padding-left: 14px; padding-right: 14px;
+    overflow: hidden; text-overflow: ellipsis; }
+  .sr-worked { background: #14171a; border: 1px solid var(--sr-line); padding: 12px; width: 100%;
+    box-sizing: border-box; }
+  .sr-worked-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--sr-line2); font-size: 13px; }
+  .sr-worked-row:last-child { border-bottom: none; }
+  .sr-worked-val { font-family: var(--sr-tab); font-variant-numeric: tabular-nums; font-size: 17px;
+    font-weight: 600; color: #fff; }
+  .sr-off-good { color: var(--sr-green); }
+  .sr-off-bad { color: var(--sr-red); }
+</style>
+
+<div class="sr" id="sr-root">
+
+  <div class="sr-ticker" data-source="players accuracy" id="sr-ticker">
+    <span class="live"><i></i>REGISTER LIVE</span>
+    <span class="seg">TOTAL MARKET VALUE: <b id="t-cap">—</b></span>
+    <span class="sep">/</span>
+    <span class="seg">LARGEST GAP: <b id="t-gap-name">—</b> <b class="up" id="t-gap-val">—</b></span>
+    <span class="sep">/</span>
+    <span class="seg">MODEL ACCURACY: <b id="t-acc">—</b> within 30%</span>
+    <span class="sep">/</span>
+    <span class="seg">SAMPLE: <b id="t-n">—</b> CONTRACTS</span>
+    <span class="sep">/</span>
+    <span class="seg">SEASON: <b id="t-season">—</b></span>
+  </div>
+
+  <div class="sr-head">
+    <div class="sr-head-left">
+      <div class="sr-mark">SR</div>
+      <div>
+        <h1 class="sr-title">The Scouting Register</h1>
+        <p class="sr-sub">Big-5 leagues &middot; algorithmic valuation ledger</p>
+      </div>
+    </div>
+    <div class="sr-head-right">
+      <div class="sr-search-wrap">
+        <input class="sr-search" id="sr-search" type="search" placeholder="Search player or club..." autocomplete="off">
+      </div>
+      <button class="sr-btn" id="sr-export">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        EXPORT CSV
+      </button>
+    </div>
+  </div>
+
+  <nav class="sr-nav" id="sr-nav">
+    <button data-tab="overview" class="on"><i>&#8984;1</i> OVERVIEW</button>
+    <button data-tab="register"><i>&#8984;2</i> VALUATIONS REGISTER</button>
+    <button data-tab="arbitrage"><i>&#8984;3</i> ARBITRAGE DESK</button>
+    <button data-tab="squad"><i>&#8984;4</i> SQUAD COMPARISON</button>
+    <button data-tab="diagnostics"><i>&#8984;5</i> MODEL DIAGNOSTICS</button>
+  </nav>
+
+  <div class="sr-kpis" data-source="players accuracy" id="sr-kpis">
+    <div class="sr-kpi">
+      <div class="sr-kpi-top"><span class="sr-kpi-lab">Register Market Value</span><span class="sr-kpi-tag">CAP-SUM</span></div>
+      <div class="sr-kpi-val tabular" id="k-cap">—</div>
+      <div class="sr-kpi-foot"><span id="k-cap-n">—</span><span id="k-cap-med">—</span></div>
+    </div>
+    <div class="sr-kpi">
+      <div class="sr-kpi-top"><span class="sr-kpi-lab">Pinnacle Valuation Asset</span><span class="sr-kpi-tag">TOP VALUE</span></div>
+      <div class="sr-kpi-val" id="k-top">—</div>
+      <div class="sr-kpi-foot"><span id="k-top-team">—</span><span id="k-top-val">—</span></div>
+    </div>
+    <div class="sr-kpi">
+      <div class="sr-kpi-top"><span class="sr-kpi-lab">Largest Valuation Gap</span><span class="sr-kpi-tag">UNDERVALUED</span></div>
+      <div class="sr-kpi-val" id="k-gap">—</div>
+      <div class="sr-kpi-foot"><span id="k-gap-team">—</span><span id="k-gap-amt">—</span></div>
+    </div>
+    <div class="sr-kpi" id="k-acc-tile" style="cursor:pointer" title="Open Model Diagnostics for the full breakdown">
+      <div class="sr-kpi-top"><span class="sr-kpi-lab">Right Often Enough to Trust?</span><span class="sr-kpi-tag">BACKTEST</span></div>
+      <div class="sr-kpi-val" id="k-acc-within">—</div>
+      <div style="font-size:12.5px; color:var(--sr-muted2); margin:-4px 0 8px">
+        of valuations land within 30% of the real price
+      </div>
+      <div class="sr-kpi-foot">
+        <span>typical miss: <b id="k-acc" style="color:#fff">—</b></span>
+        <span id="k-acc-n">— &rarr;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-panel" id="panel-overview">
+    <div class="sr-ov-hero">
+      <h2 class="sr-ov-h1">What is a footballer actually worth?</h2>
+      <p class="sr-ov-lead">
+        The Scouting Register prices every Big-5 player-season from what he actually does on the pitch for his
+        position &mdash; age, playing time and the squad around him included &mdash; then sets that fair value
+        beside his Transfermarkt market price. Where the two disagree by a wide margin, somebody is either a
+        bargain or a risk.
+      </p>
+    </div>
+
+    <div class="sr-ov-steps">
+      <div class="sr-ov-step">
+        <span class="sr-ov-step-n">1</span>
+        <h3>Judge him by his job</h3>
+        <p>A centre-back is rated on tackles, interceptions, clearances and blocks. A striker on goals, assists
+          and shots. Four separate models, one per position.</p>
+      </div>
+      <div class="sr-ov-step">
+        <span class="sr-ov-step-n">2</span>
+        <h3>Add what moves a price</h3>
+        <p>Age, how much of the season he actually plays, and the quality of the squad around him. A young
+          regular at a big club is priced differently from a veteran squad player.</p>
+      </div>
+      <div class="sr-ov-step">
+        <span class="sr-ov-step-n">3</span>
+        <h3>Compare with the market</h3>
+        <p>The result is a fair value. Set it against his actual market price: higher means the market has him
+          cheap, lower means it's paying for something the numbers don't show.</p>
+      </div>
+    </div>
+
+    <div class="sr-ov-section-lab">A first look at this season's mispricings</div>
+    <div class="sr-arb-grid" style="margin: 0 16px 16px;">
+      <div class="sr-arb-card">
+        <div class="sr-arb-card-head">
+          <span class="sr-arb-card-lab up">MOST UNDERVALUED, THIS SEASON</span>
+          <span class="sr-arb-card-n" id="ov-cheap-n">—</span>
+        </div>
+        <div id="ov-cheap"></div>
+      </div>
+      <div class="sr-arb-card">
+        <div class="sr-arb-card-head">
+          <span class="sr-arb-card-lab dn">MOST OVERVALUED, THIS SEASON</span>
+          <span class="sr-arb-card-n" id="ov-dear-n">—</span>
+        </div>
+        <div id="ov-dear"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-panel" id="panel-register" hidden>
+    <div class="sr-console">
+      <span class="sr-console-lab">Position</span>
+      <div class="sr-seg" id="sr-pos-seg">
+        <button data-pos="" class="on">ALL</button>
+        <button data-pos="FW">FW</button>
+        <button data-pos="MF">MF</button>
+        <button data-pos="DF">DF</button>
+        <button data-pos="GK">GK</button>
+      </div>
+      <select class="sr-sel" id="sr-league"></select>
+      <select class="sr-sel" id="sr-season"></select>
+      <select class="sr-sel" id="sr-sort">
+        <option value="fair-desc">Sort: fair value (desc)</option>
+        <option value="market-desc">Sort: market value (desc)</option>
+        <option value="gap-desc">Sort: undervalued gap (desc)</option>
+        <option value="gap-asc">Sort: overvalued gap (desc)</option>
+        <option value="conf-desc">Sort: confidence (desc)</option>
+        <option value="age-asc">Sort: age (asc)</option>
+        <option value="mins-desc">Sort: minutes (desc)</option>
+      </select>
+      <label class="sr-check"><input type="checkbox" id="sr-regular">Regular minutes only</label>
+      <span class="sr-count"><b id="sr-count-n">—</b> of <b id="sr-count-total">—</b> contracts</span>
+      <button class="sr-reset" id="sr-reset">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+        RESET
+      </button>
+    </div>
+
+    <div class="sr-tablewrap">
+      <div class="sr-scroll">
+        <table class="sr-table" data-source="players" data-row-key="id" id="sr-table">
+          <thead>
+            <tr>
+              <th class="ctr">RK</th>
+              <th data-field="player">PLAYER / SQUAD</th>
+              <th class="ctr" data-field="pos">POS</th>
+              <th class="ctr sortable" data-field="age" data-sort="age-asc">AGE</th>
+              <th data-field="league">LEAGUE</th>
+              <th class="num sortable" data-field="minutes" data-sort="mins-desc">MINS</th>
+              <th>KEY STATS</th>
+              <th class="num sortable" data-field="market_m" data-sort="market-desc">MARKET VALUE</th>
+              <th class="num sortable" data-field="model_m" data-sort="fair-desc">FAIR VALUE</th>
+              <th class="ctr">DEVIATION</th>
+              <th class="num sortable" data-sort="conf-desc">CONFIDENCE</th>
+              <th class="ctr">VIEW</th>
+            </tr>
+          </thead>
+          <tbody id="sr-tbody"></tbody>
+        </table>
+      </div>
+      <div class="sr-foot">
+        <span id="sr-foot-range">—</span>
+        <div class="sr-page-btns" id="sr-pages"></div>
+      </div>
+    </div>
+
+    <p class="sr-note">
+      <b>Fair value</b> is each position's model price from his own statistics, age, minutes and squad context.
+      <b>Key stats</b> are the two statistics that matter most for his position &mdash; goals and assists for a
+      forward, tackles and interceptions for a defender, passing and chance creation for a midfielder, saves and
+      goals conceded for a goalkeeper. <b>Confidence</b> reads the tightness of the model's own likely range
+      around its price estimate &mdash; a wide range scores lower, not an external audit. A
+      <span style="color:var(--sr-red)">&#9888;</span> next to minutes marks a small sample (under half his
+      team's minutes this season) &mdash; his fair value there leans on squad and league context more than his
+      own numbers, so read it as an early guess, not a settled one. <b>Market value</b> is a Transfermarkt
+      estimate, not a transfer fee. Statistics from FotMob. Click any row for the full breakdown.
+    </p>
+  </div>
+
+  <div class="sr-panel" id="panel-arbitrage" hidden>
+  <div class="sr-arb" data-source="players">
+    <div class="sr-arb-head">
+      <span class="sr-arb-title">Arbitrage Desk &mdash; where the model and the market disagree</span>
+      <span class="sr-arb-sub" id="arb-season-lab">—</span>
+    </div>
+    <div class="sr-arb-console">
+      <span class="sr-console-lab">League</span>
+      <select class="sr-sel" id="arb-league"></select>
+      <span class="sr-console-lab">Position</span>
+      <select class="sr-sel" id="arb-pos">
+        <option value="">All positions</option>
+        <option value="GK">Goalkeepers</option>
+        <option value="DF">Defenders</option>
+        <option value="MF">Midfielders</option>
+        <option value="FW">Forwards</option>
+      </select>
+      <span class="sr-console-lab">Age</span>
+      <select class="sr-sel" id="arb-age">
+        <option value="">Any age</option>
+        <option value="u23">Under 23</option>
+        <option value="23">23 and over</option>
+        <option value="27">27 and over</option>
+      </select>
+      <span class="sr-console-lab">Price at least</span>
+      <select class="sr-sel" id="arb-minval">
+        <option value="1">&euro;1m</option>
+        <option value="5">&euro;5m</option>
+        <option value="20">&euro;20m</option>
+        <option value="50">&euro;50m</option>
+        <option value="0">any price</option>
+      </select>
+      <span class="sr-console-lab">Rank by</span>
+      <select class="sr-sel" id="arb-rankby">
+        <option value="pct">% difference</option>
+        <option value="abs">&euro; difference</option>
+      </select>
+    </div>
+    <div class="sr-arb-grid">
+      <div class="sr-arb-card">
+        <div class="sr-arb-card-head">
+          <span class="sr-arb-card-lab up">TOP 10 MOST UNDERVALUED</span>
+          <span class="sr-arb-card-n" id="arb-cheap-n">—</span>
+        </div>
+        <div id="arb-cheap"></div>
+        <p class="sr-arb-note" id="arb-cheap-note"></p>
+      </div>
+      <div class="sr-arb-card">
+        <div class="sr-arb-card-head">
+          <span class="sr-arb-card-lab dn">TOP 10 MOST OVERVALUED</span>
+          <span class="sr-arb-card-n" id="arb-dear-n">—</span>
+        </div>
+        <div id="arb-dear"></div>
+        <p class="sr-arb-note">Fair value sits below market price &mdash; often a big-club reputation, a long
+          contract, or a young player bought on promise. Regular minutes only, so no one rides two substitute
+          appearances onto the list.</p>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="sr-panel" id="panel-squad" hidden>
+    <div class="sr-squad-console">
+      <span class="sr-console-lab">Season</span>
+      <span class="sr-count" id="squad-season" style="margin-left:0">—</span>
+      <span class="sr-console-lab">League</span>
+      <select class="sr-sel" id="squad-league"></select>
+      <span class="sr-console-lab">Clubs (pick 2&ndash;4)</span>
+      <span class="sr-count" id="squad-count" style="margin-left:0">—</span>
+    </div>
+    <div class="sr-chips" id="squad-chips"></div>
+    <div class="sr-squad-grid" id="squad-grid"></div>
+  </div>
+
+  <div class="sr-panel" id="panel-diagnostics" hidden>
+    <div class="sr-diag-sec">
+      <div class="sr-diag-title">Can you trust the number?</div>
+      <p class="sr-diag-sec-sub">Everything below comes from a completed season held out of training entirely
+        &mdash; the models were fit on earlier seasons only, then asked to price this one cold. These are prices
+        for players they had never seen.</p>
+    </div>
+
+    <div class="sr-diag-row">
+      <div class="sr-diag-cell">
+        <div class="sr-diag-sec-head">What those two attempts look like for one player</div>
+        <div class="sr-worked" id="diag-worked"></div>
+      </div>
+      <div class="sr-diag-cell">
+        <div class="sr-diag-sec-head">Accuracy by position</div>
+        <p class="sr-diag-sec-sub">Each position gets its own model. The gap between pricing a player blind
+          (age, minutes, club only) and pricing him with his own statistics is what those statistics are worth.</p>
+        <div class="sr-diag-table-wrap">
+          <div class="sr-scroll">
+            <table class="sr-table" id="diag-table">
+              <colgroup>
+                <col style="width:22%"><col style="width:13%"><col style="width:18%">
+                <col style="width:20%"><col style="width:15%"><col style="width:12%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>POSITION</th>
+                  <th class="num">N TESTED</th>
+                  <th class="num">ERROR, BLIND</th>
+                  <th class="num">ERROR, WITH STATS</th>
+                  <th class="num">GAIN (PTS)</th>
+                  <th class="num">R&sup2;</th>
+                </tr>
+              </thead>
+              <tbody id="diag-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sr-diag-row">
+      <div class="sr-diag-cell">
+        <div class="sr-diag-sec-head">Judge it yourself</div>
+        <p class="sr-diag-sec-sub">What the model said about players you know, before it saw that season.</p>
+        <div class="sr-diag-table-wrap">
+          <div class="sr-scroll">
+            <table class="sr-table" id="diag-examples">
+              <colgroup>
+                <col style="width:46%"><col style="width:18%"><col style="width:18%"><col style="width:18%">
+              </colgroup>
+              <thead>
+                <tr><th>PLAYER</th><th class="num">MARKET</th><th class="num">MODEL</th><th class="num">OFF BY</th></tr>
+              </thead>
+              <tbody id="diag-examples-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="sr-diag-cell">
+        <div class="sr-diag-sec-head">Worth keeping in mind</div>
+        <div class="sr-diag-callout">
+          Market values are Transfermarkt estimates, not transfer fees. Statistics from FotMob.
+          A model trained to minimise error will still miss low on breakout teenagers and high on ageing veterans
+          &mdash; it has no way to see potential or decline before the numbers show it.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sr-overlay" id="sr-overlay"></div>
+  <aside class="sr-drawer" id="sr-drawer">
+    <div class="sr-d-head">
+      <div class="sr-d-head-left">
+        <div class="sr-d-avatar" id="d-avatar">—</div>
+        <div>
+          <div class="sr-d-name" id="d-name">—</div>
+          <div class="sr-d-sub" id="d-sub">—</div>
+        </div>
+      </div>
+      <button class="sr-d-close" id="d-close">
+        <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="sr-d-body">
+      <div class="sr-d-warn" id="d-warn" hidden></div>
+      <div class="sr-d-box">
+        <div class="sr-d-box-head"><span>FAIR VALUE ESTIMATE</span><span id="d-verdict" style="color:var(--sr-accent)">—</span></div>
+        <div class="sr-bar-row"><span class="sr-bar-lab">Market value</span>
+          <div class="sr-bar-track"><div class="sr-bar-fill" id="d-bar-market"></div><span class="sr-bar-val" id="d-val-market"></span></div></div>
+        <div class="sr-bar-row"><span class="sr-bar-lab">Fair value</span>
+          <div class="sr-bar-track"><div class="sr-bar-fill" id="d-bar-model"></div><span class="sr-bar-val" id="d-val-model"></span></div></div>
+        <div class="sr-axis" id="d-axis"></div>
+        <p class="sr-note-box" id="d-gap" style="margin:8px 0 0"></p>
+        <p class="sr-note-box" id="d-range" style="margin:2px 0 0"></p>
+      </div>
+
+      <div>
+        <div class="sr-d-sec-lab">CONTRACT &amp; SAMPLE TELEMETRY</div>
+        <div class="sr-d-list">
+          <div class="sr-d-row"><span>League</span><span id="d-league">—</span></div>
+          <div class="sr-d-row"><span>Season</span><span id="d-season">—</span></div>
+          <div class="sr-d-row"><span>Matches / Minutes</span><span id="d-mins">—</span></div>
+          <div class="sr-d-row"><span>Share of team minutes</span><span id="d-share">—</span></div>
+          <div class="sr-d-row"><span>Range confidence</span><span id="d-conf">—</span></div>
+        </div>
+      </div>
+
+      <div id="d-why-wrap" hidden>
+        <div class="sr-d-sec-lab">VALUATION COEFFICIENTS</div>
+        <div class="sr-d-box" style="border-top:none" id="d-why"></div>
+      </div>
+
+      <div>
+        <div class="sr-d-sec-lab" id="d-stats-head">POSITIONAL STATISTICS</div>
+        <div class="sr-d-box" style="border-top:none" id="d-stats"></div>
+      </div>
+
+      <div class="sr-d-box">
+        <span class="sr-note-box lab">LEDGER NOTE</span>
+        <p class="sr-note-box" id="d-footnote" style="margin:0"></p>
+      </div>
+    </div>
+    <div class="sr-d-foot"><button id="d-close2">CLOSE [ESC]</button></div>
+  </aside>
+
+</div>
+
+<script>
+(() => {
+  // Number('') and Number(null) both coerce to 0 in JS, which would silently turn a
+  // missing/blank CSV cell (common for percentiles on low-minutes players) into a real zero.
+  const N = (x) => {
+    if (x === '' || x == null) return null;
+    const v = Number(x);
+    return Number.isFinite(v) ? v : null;
+  };
+  const money = (m) => {
+    if (m == null) return '—';
+    const sign = m < 0 ? '-' : '', a = Math.abs(m);
+    if (a >= 1000) return sign + '€' + (Math.round(a / 10) / 100).toFixed(2) + 'b';
+    if (a >= 100) return sign + '€' + Math.round(a) + 'm';
+    if (a >= 1) return sign + '€' + (Math.round(a * 10) / 10).toFixed(1) + 'm';
+    return sign + '€' + Math.round(a * 1000) + 'k';
+  };
+  const moneyFull = (m) => m == null ? '—' : '€' + Math.round(m * 1e6).toLocaleString('en');
+  const ord = (p) => { const n = Math.round(p); const t = n % 100;
+    return n + (t >= 11 && t <= 13 ? 'th' : ({1:'st',2:'nd',3:'rd'}[n % 10] || 'th')); };
+  const isTrue = (v) => v === true || String(v).toLowerCase() === 'true';
+
+  const POS_ONE = { GK: 'Goalkeeper', DF: 'Defender', MF: 'Midfielder', FW: 'Forward' };
+  const POS_LABEL = { GK: 'goalkeepers', DF: 'defenders', MF: 'midfielders', FW: 'forwards' };
+  const POS_STATS = {
+    GK: ['Saves per 90', 'Goals conceded per 90', 'Clean sheets',
+         'Accurate passes per 90', 'Accurate long balls per 90', 'Share of team minutes'],
+    DF: ['Tackles per 90', 'Interceptions per 90', 'Clearances per 90',
+         'Blocks per 90', 'Ball recoveries per 90', 'Accurate passes per 90'],
+    MF: ['Accurate passes per 90', 'Chances created per 90', 'Expected assists per 90',
+         'Interceptions per 90', 'Tackles per 90', 'Ball recoveries per 90'],
+    FW: ['Goals per 90', 'Assists per 90', 'Expected goals per 90',
+         'Shots on target per 90', 'Big chances created per 90', 'Dribbles won per 90'],
+  };
+  const LEAGUE_CODE = { 'Premier League': 'PL', 'La Liga': 'LL', 'Serie A': 'SA',
+    'Bundesliga': 'BL', 'Ligue 1': 'L1' };
+  // the two most important statistics for each position's model, abbreviated for the register column
+  const KEY_STAT = {
+    GK: [['SV', 's1_val'], ['GC', 's2_val']],
+    DF: [['TKL', 's1_val'], ['INT', 's2_val']],
+    MF: [['PASS', 's1_val'], ['CHC', 's2_val']],
+    FW: [['G', 's1_val'], ['A', 's2_val']],
+  };
+  const REASON = {
+    age: 'his age', mins: 'how much he plays', apps: 'his appearance record',
+    club: 'the squad around him', hgt: 'his height', rtg: 'his match ratings',
+    foul: 'the fouls he gives away', card: 'his bookings', lg: 'the league he plays in',
+    foot: 'his stronger foot', spos: 'his exact position',
+    gls: 'his goals', ast: 'his assists', xg: 'his expected goals', xa: 'his expected assists',
+    sot: 'his shots on target', sh: 'his shot volume', bigc: 'big chances he creates',
+    bcm: 'big chances he misses', chc: 'the chances he creates', drb: 'his dribbling',
+    pass: 'his passing volume', lb: 'his long passing',
+    tkl: 'his tackling', int: 'his interceptions', clr: 'his clearances',
+    blk: 'his blocks', rec: 'the ball he wins back', hturn: 'his pressing high up',
+    def: 'his defensive work', sav: 'his saves', gc: 'the goals he concedes',
+    cs: 'his clean sheets',
+  };
+  const reasonText = (c) => REASON[c] || c;
+
+  const el = (id) => document.getElementById(id);
+  const rows = (id) => { const d = dash.data(id); return d.status === 'ok' && Array.isArray(d.data) ? d.data : []; };
+
+  const prep = (r) => ({
+    ...r, market: N(r.market_m), model: N(r.model_m), lo: N(r.lo_m), hi: N(r.hi_m),
+    gap: N(r.gap_m), ratio: N(r.ratio), age: N(r.age), matches: N(r.matches),
+    minutes: N(r.minutes), minutes_share: N(r.minutes_share),
+  });
+
+  // confidence: how tight the model's own likely range is around its own estimate
+  const confOf = (r) => {
+    if (r.model == null || !r.model || r.lo == null || r.hi == null) return null;
+    const spread = (r.hi - r.lo) / (2 * r.model);
+    return Math.max(0.05, Math.min(0.99, 1 - spread));
+  };
+
+  // one symmetric band, used everywhere a row gets called under/over/fairly valued
+  const DEV_THRESHOLD = 10;
+  const devClass = (pct) => pct >= DEV_THRESHOLD ? 'sr-dev-up' : (pct <= -DEV_THRESHOLD ? 'sr-dev-dn' : 'sr-dev-fl');
+  const devLabel = (pct) => {
+    const sign = pct >= 0 ? '+' : '';
+    if (pct >= DEV_THRESHOLD) return `${sign}${pct.toFixed(1)}% UNDERVALUED`;
+    if (pct <= -DEV_THRESHOLD) return `${pct.toFixed(1)}% OVERVALUED`;
+    return `${sign}${pct.toFixed(1)}% FAIR PARITY`;
+  };
+  const initials = (name) => (name || '').split(' ').filter(Boolean).slice(-2)
+    .map((w) => w[0]).join('').toUpperCase().slice(0, 2) || '—';
+
+  // one tooltip per container, created on first use and reused after
+  const tipFor = (container) => {
+    let t = container.querySelector('.sr-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'sr-tip'; container.appendChild(t); }
+    return t;
+  };
+  const placeTip = (tip, container, event) => {
+    const box = container.getBoundingClientRect();
+    let x = event.clientX - box.left + 12;
+    const y = event.clientY - box.top + 12;
+    if (x + 220 > box.width - 8) x = Math.max(8, x - 220 - 24);
+    tip.style.left = x + 'px';
+    tip.style.top = Math.min(y, Math.max(8, box.height - 70)) + 'px';
+  };
+
+  // ------------------------------------------------------------- state --
+  let ALL = [], FILTERED = [], chosen = null, PAGE = 1;
+  const PAGE_SIZE = 25;
+  let COLOR_MODEL, COLOR_MARKET;
+
+  const search = el('sr-search'), leagueSel = el('sr-league'), seasonSel = el('sr-season'),
+        sortSel = el('sr-sort'), regularBox = el('sr-regular'), posSeg = el('sr-pos-seg');
+  let posFilter = '';
+
+  const arbLeague = el('arb-league'), arbPos = el('arb-pos'), arbAge = el('arb-age'),
+        arbMinval = el('arb-minval'), arbRankby = el('arb-rankby');
+
+  const squadLeague = el('squad-league');
+
+  // --------------------------------------------------------------- filter/sort --
+  function recompute() {
+    const season = seasonSel.value;
+    const league = leagueSel.value;
+    const q = search.value.trim().toLowerCase();
+    const regularOnly = regularBox.checked;
+
+    let pool = ALL.filter((r) => r.season === season
+      && (!league || r.league === league)
+      && (!posFilter || r.pos === posFilter)
+      && (!regularOnly || isTrue(r.regular))
+      && (!q || r.player.toLowerCase().includes(q) || r.team.toLowerCase().includes(q)));
+
+    const sort = sortSel.value;
+    const cmp = {
+      'fair-desc': (a, b) => (b.model || 0) - (a.model || 0),
+      'market-desc': (a, b) => (b.market || 0) - (a.market || 0),
+      'gap-desc': (a, b) => (b.gap || -1e9) - (a.gap || -1e9),
+      'gap-asc': (a, b) => (a.gap || 1e9) - (b.gap || 1e9),
+      'conf-desc': (a, b) => (confOf(b) || 0) - (confOf(a) || 0),
+      'age-asc': (a, b) => (a.age || 0) - (b.age || 0),
+      'mins-desc': (a, b) => (b.minutes || 0) - (a.minutes || 0),
+    }[sort] || ((a, b) => (b.model || 0) - (a.model || 0));
+    pool = pool.slice().sort(cmp);
+
+    FILTERED = pool;
+    const seasonTotal = ALL.filter((r) => r.season === season).length;
+    el('sr-count-n').textContent = pool.length.toLocaleString('en');
+    el('sr-count-total').textContent = seasonTotal.toLocaleString('en');
+    PAGE = Math.min(PAGE, Math.max(1, Math.ceil(pool.length / PAGE_SIZE)));
+    drawTable();
+    drawKpis(ALL.filter((r) => r.season === season && (!league || r.league === league)));
+  }
+
+  // ------------------------------------------------------------------ table --
+  function drawTable() {
+    const tbody = el('sr-tbody');
+    tbody.replaceChildren();
+    if (!FILTERED.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 12; td.className = 'sr-empty';
+      td.textContent = 'No contracts match these filters.';
+      tr.appendChild(td); tbody.appendChild(tr);
+      el('sr-foot-range').textContent = 'SHOWING 0 OF 0';
+      el('sr-pages').replaceChildren();
+      return;
+    }
+    const start = (PAGE - 1) * PAGE_SIZE;
+    const page = FILTERED.slice(start, start + PAGE_SIZE);
+
+    page.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = r.id;
+
+      const rk = document.createElement('td'); rk.className = 'ctr tabular';
+      rk.textContent = String(start + i + 1).padStart(2, '0');
+
+      const name = document.createElement('td');
+      const wrap = document.createElement('div'); wrap.className = 'sr-row-name';
+      const av = document.createElement('div'); av.className = 'sr-avatar'; av.textContent = initials(r.player);
+      const inner = document.createElement('div');
+      const nm = document.createElement('div'); nm.className = 'sr-name-main'; nm.textContent = r.player;
+      const sub = document.createElement('div'); sub.className = 'sr-name-sub';
+      sub.textContent = `${r.team} · ${LEAGUE_CODE[r.league] || r.league}`;
+      inner.append(nm, sub); wrap.append(av, inner); name.appendChild(wrap);
+
+      const pos = document.createElement('td'); pos.className = 'ctr';
+      const chip = document.createElement('span'); chip.className = 'sr-pos-chip';
+      chip.style.color = 'var(--sr-accent)'; chip.textContent = r.pos; pos.appendChild(chip);
+
+      const age = document.createElement('td'); age.className = 'ctr tabular';
+      age.textContent = r.age != null ? Math.round(r.age) : '—';
+
+      const league = document.createElement('td'); league.textContent = LEAGUE_CODE[r.league] || r.league;
+
+      const mins = document.createElement('td'); mins.className = 'num tabular';
+      mins.textContent = r.minutes != null ? r.minutes.toLocaleString('en') : '—';
+      if (!isTrue(r.regular)) {
+        const flag = document.createElement('span'); flag.textContent = ' ⚠';
+        flag.style.color = 'var(--sr-red)'; flag.style.cursor = 'help';
+        flag.title = 'Small sample: fewer than half his team’s minutes this season. '
+          + 'Fair value here leans on squad and league context more than his own form.';
+        mins.appendChild(flag);
+      }
+
+      const key = document.createElement('td');
+      const keyWrap = document.createElement('div'); keyWrap.className = 'sr-key';
+      for (const [label, field] of (KEY_STAT[r.pos] || [])) {
+        const v = N(r[field]);
+        if (v == null) continue;
+        const line = document.createElement('div');
+        const b = document.createElement('b'); b.textContent = v;
+        const s = document.createElement('span'); s.textContent = ' ' + label;
+        line.append(b, s);
+        keyWrap.appendChild(line);
+      }
+      if (!keyWrap.childNodes.length) keyWrap.textContent = '—';
+      key.appendChild(keyWrap);
+
+      const mkt = document.createElement('td'); mkt.className = 'num tabular';
+      mkt.textContent = money(r.market);
+
+      const fair = document.createElement('td'); fair.className = 'num tabular';
+      fair.style.fontWeight = '700'; fair.style.color = '#fff';
+      fair.textContent = money(r.model);
+
+      const dev = document.createElement('td'); dev.className = 'ctr';
+      if (r.market && r.gap != null) {
+        const pct = r.gap / r.market * 100;
+        const span = document.createElement('span');
+        span.className = 'sr-dev ' + devClass(pct);
+        span.textContent = devLabel(pct);
+        dev.appendChild(span);
+      } else dev.textContent = '—';
+
+      const conf = document.createElement('td'); conf.className = 'num';
+      const c = confOf(r);
+      if (c != null) {
+        const w = document.createElement('div'); w.className = 'sr-conf';
+        const track = document.createElement('div'); track.className = 'sr-conf-track';
+        const fill = document.createElement('div'); fill.className = 'sr-conf-fill';
+        fill.style.width = Math.round(c * 100) + '%';
+        track.appendChild(fill);
+        const txt = document.createElement('span'); txt.className = 'tabular';
+        txt.textContent = Math.round(c * 100) + '%';
+        w.append(track, txt);
+        conf.appendChild(w);
+      } else conf.textContent = '—';
+
+      const view = document.createElement('td'); view.className = 'ctr sr-chev';
+      view.innerHTML = '›';
+
+      tr.append(rk, name, pos, age, league, mins, key, mkt, fair, dev, conf, view);
+      tr.addEventListener('click', () => openDrawer(r));
+      tbody.appendChild(tr);
+    });
+
+    el('sr-foot-range').textContent =
+      `SHOWING ${start + 1}–${Math.min(start + PAGE_SIZE, FILTERED.length)} OF ${FILTERED.length.toLocaleString('en')} TARGETS`;
+    drawPager();
+  }
+
+  function drawPager() {
+    const host = el('sr-pages');
+    host.replaceChildren();
+    const pages = Math.max(1, Math.ceil(FILTERED.length / PAGE_SIZE));
+    const btn = (label, page, disabled, on) => {
+      const b = document.createElement('button');
+      b.textContent = label; if (on) b.classList.add('on'); b.disabled = !!disabled;
+      b.addEventListener('click', () => { PAGE = page; drawTable(); });
+      return b;
+    };
+    host.appendChild(btn('PREV', PAGE - 1, PAGE <= 1, false));
+    const nums = new Set([1, pages, PAGE, PAGE - 1, PAGE + 1].filter((n) => n >= 1 && n <= pages));
+    let last = 0;
+    Array.from(nums).sort((a, b) => a - b).forEach((n) => {
+      if (n - last > 1) { const s = document.createElement('span'); s.textContent = '...';
+        s.style.padding = '0 4px'; host.appendChild(s); }
+      host.appendChild(btn(String(n), n, false, n === PAGE));
+      last = n;
+    });
+    host.appendChild(btn('NEXT', PAGE + 1, PAGE >= pages, false));
+  }
+
+  // -------------------------------------------------------------------- kpis --
+  function drawKpis(scope) {
+    const cap = scope.reduce((s, r) => s + (r.market || 0), 0);
+    el('k-cap').textContent = moneyFull(cap);
+    el('k-cap-n').textContent = `${scope.length.toLocaleString('en')} CONTRACTS`;
+    const ages = scope.map((r) => r.age).filter((x) => x != null).sort((a, b) => a - b);
+    el('k-cap-med').textContent = ages.length ? `MEDIAN AGE ${ages[Math.floor(ages.length / 2)].toFixed(1)}` : '';
+
+    // headline single-player picks are restricted to regular minutes, so a three-game cameo
+    // at a big club can't hijack the top spot on squad-strength alone
+    const withModel = scope.filter((r) => r.model != null && isTrue(r.regular));
+    if (withModel.length) {
+      const top = withModel.slice().sort((a, b) => b.model - a.model)[0];
+      el('k-top').textContent = `${top.player}`;
+      el('k-top-team').textContent = `${top.team} · ${top.pos}`;
+      el('k-top-val').textContent = money(top.model);
+    }
+    const withGap = scope.filter((r) => r.gap != null && r.market && isTrue(r.regular));
+    if (withGap.length) {
+      const g = withGap.slice().sort((a, b) => b.gap - a.gap)[0];
+      el('k-gap').textContent = g.player;
+      el('k-gap-team').textContent = `${g.team} · ${g.pos}`;
+      const pct = (g.gap / g.market * 100).toFixed(1);
+      el('k-gap-amt').textContent = `+${money(g.gap)} (+${pct}%)`;
+    }
+  }
+
+  // ------------------------------------------------------------- arbitrage desk --
+  function buildArbRows(host, list, dir) {
+    host.replaceChildren();
+    if (!list.length) {
+      const p = document.createElement('p'); p.className = 'sr-arb-empty';
+      p.textContent = 'No contracts match these filters.';
+      host.appendChild(p);
+      return;
+    }
+    const gapOf = (r) => (r.model || 0) - (r.market || 0);
+    list.forEach((r, i) => {
+      const row = document.createElement('div'); row.className = 'sr-arb-row';
+      row.dataset.key = r.id;
+
+      const rk = document.createElement('span'); rk.className = 'sr-arb-rank tabular';
+      rk.textContent = String(i + 1).padStart(2, '0');
+
+      const mid = document.createElement('div');
+      const nm = document.createElement('div'); nm.className = 'sr-arb-name'; nm.textContent = r.player;
+      const sub = document.createElement('div'); sub.className = 'sr-arb-sub2';
+      sub.textContent = `${r.team} · ${r.pos} · ${r.age != null ? Math.round(r.age) : '—'}`;
+      mid.append(nm, sub);
+      // the real driver can be a situational factor (age, club, league) as easily as a pitch
+      // stat, so weigh all six and prefer whichever actually explains why he's on this list
+      const factors = [...[1, 2, 3].map((k) => ({ code: r['perf' + k], pct: N(r['perf' + k + '_pct']) })),
+        ...[1, 2, 3].map((k) => ({ code: r['ctx' + k], pct: N(r['ctx' + k + '_pct']) }))]
+        .filter((x) => x.code && x.pct != null);
+      const needSign = dir === 'cheap' ? 1 : -1;
+      const matching = factors.filter((x) => Math.sign(x.pct) === needSign)
+        .sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+      const strongest = factors.slice().sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+      const pick = matching[0] || strongest[0];
+      if (pick) {
+        const reason = document.createElement('div'); reason.className = 'sr-arb-sub2';
+        reason.textContent = (pick.pct > 0 ? 'Helped by ' : 'Held back by ') + reasonText(pick.code)
+          + ` (${pick.pct > 0 ? '+' : ''}${Math.round(pick.pct)}%)`;
+        mid.appendChild(reason);
+      }
+
+      const num = document.createElement('div'); num.className = 'sr-arb-num';
+      const flow = document.createElement('div'); flow.className = 'sr-arb-flow tabular';
+      flow.textContent = `${money(r.market)} → ${money(r.model)}`;
+      const gapEl = document.createElement('div'); gapEl.className = 'sr-arb-gap ' + (dir === 'cheap' ? 'up' : 'dn');
+      const pct = Math.round(Math.abs(r.ratio - 1) * 100);
+      const abs = money(Math.abs(gapOf(r)));
+      gapEl.textContent = dir === 'cheap'
+        ? (r.ratio >= 2.5 ? `${r.ratio.toFixed(1)}× his price · ${abs} gap` : `${pct}% under · ${abs} gap`)
+        : `${pct}% over · ${abs} gap`;
+      num.append(flow, gapEl);
+
+      row.append(rk, mid, num);
+      row.addEventListener('click', () => openDrawer(r));
+      host.appendChild(row);
+    });
+  }
+
+  function fillArbLists() {
+    const season = seasonSel.value;
+    const league = arbLeague.value, pos = arbPos.value, ageBand = arbAge.value;
+    const minVal = Number(arbMinval.value || 0);
+    const byAbs = arbRankby.value === 'abs';
+
+    el('arb-season-lab').textContent = `${season} · regular minutes only`;
+
+    const pool = ALL.filter((r) => r.season === season
+      && (!league || r.league === league) && (!pos || r.pos === pos)
+      && r.ratio != null && r.market != null && r.market >= minVal
+      && (!ageBand || (ageBand === 'u23' ? r.age < 23 : r.age >= Number(ageBand)))
+      && isTrue(r.regular));
+
+    const score = (r) => byAbs ? (r.model || 0) - (r.market || 0) : (r.ratio - 1);
+
+    const cheap = pool.filter((r) => r.ratio > 1).sort((a, b) => score(b) - score(a)).slice(0, 10);
+    const dear = pool.filter((r) => r.ratio < 1).sort((a, b) => score(a) - score(b)).slice(0, 10);
+    buildArbRows(el('arb-cheap'), cheap, 'cheap');
+    buildArbRows(el('arb-dear'), dear, 'dear');
+    el('arb-cheap-n').textContent = `${pool.filter((r) => r.ratio > 1).length} ELIGIBLE`;
+    el('arb-dear-n').textContent = `${pool.filter((r) => r.ratio < 1).length} ELIGIBLE`;
+
+    const young = cheap.filter((r) => r.age < 23).length;
+    el('arb-cheap-note').textContent = young >= 4
+      ? 'Young players who have just broken into a strong side crowd this list: the model sees the minutes '
+        + 'and the squad quality around them, while their price often still reflects where they started out. '
+        + 'Filter by age to see the established players.'
+      : 'Fair value sits above market price — on the numbers alone, this is what a recruitment list looks like.';
+  }
+
+  // ------------------------------------------------------------------ overview --
+  function fillOverview() {
+    const season = seasonSel.value;
+    const pool = ALL.filter((r) => r.season === season && r.ratio != null && r.market != null
+      && isTrue(r.regular));
+    const cheap = pool.filter((r) => r.ratio > 1).sort((a, b) => (b.ratio - 1) - (a.ratio - 1)).slice(0, 3);
+    const dear = pool.filter((r) => r.ratio < 1).sort((a, b) => (a.ratio - 1) - (b.ratio - 1)).slice(0, 3);
+    buildArbRows(el('ov-cheap'), cheap, 'cheap');
+    buildArbRows(el('ov-dear'), dear, 'dear');
+    el('ov-cheap-n').textContent = `${season}, ALL LEAGUES`;
+    el('ov-dear-n').textContent = `${season}, ALL LEAGUES`;
+  }
+
+  // ----------------------------------------------------------------- drawer --
+  function openDrawer(r) {
+    chosen = r.id;
+    el('d-avatar').textContent = initials(r.player);
+    el('d-name').textContent = r.player;
+    el('d-sub').textContent = `${r.team} · ${r.league} · ${POS_ONE[r.pos] || r.pos}`;
+
+    const warn = el('d-warn');
+    if (!isTrue(r.regular)) {
+      warn.hidden = false;
+      warn.textContent = `Small sample: ${r.matches ?? 0} matches, ${r.minutes != null ? r.minutes.toLocaleString('en') : 0} `
+        + `minutes (${r.minutes_share != null ? Math.round(r.minutes_share * 100) : 0}% of his team's). With this `
+        + `little to go on, the model leans heavily on his squad and league rather than his own form — treat `
+        + `this fair value as a rough early read, not a settled number.`;
+    } else {
+      warn.hidden = true;
+    }
+
+    const gapPct = r.market ? (r.gap / r.market * 100) : null;
+    el('d-verdict').textContent = gapPct == null ? '—'
+      : (gapPct >= DEV_THRESHOLD ? 'LIKELY UNDERVALUED' : gapPct <= -DEV_THRESHOLD ? 'LIKELY OVERVALUED' : 'FAIR PARITY');
+    el('d-verdict').style.color = gapPct == null ? 'var(--sr-muted)'
+      : (gapPct >= DEV_THRESHOLD ? 'var(--sr-green)' : gapPct <= -DEV_THRESHOLD ? 'var(--sr-red)' : 'var(--sr-muted)');
+
+    const raw = Math.max(r.market || 0, r.hi || 0, r.model || 0) || 1;
+    const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+    const top = [1, 2, 2.5, 5, 10].find((f) => raw <= f * pow) * pow;
+    const setBar = (fillId, valId, value, color) => {
+      const fill = el(fillId), label = el(valId);
+      const pct = Math.max(0, Math.min(100, (value || 0) / top * 100));
+      fill.style.width = pct + '%'; fill.style.background = color; label.textContent = money(value);
+      const wide = pct > 30;
+      label.style.left = wide ? '8px' : `calc(${pct}% + 8px)`;
+      label.classList.toggle('out', !wide);
+    };
+    setBar('d-bar-market', 'd-val-market', r.market, COLOR_MARKET);
+    setBar('d-bar-model', 'd-val-model', r.model, COLOR_MODEL);
+
+    const axis = el('d-axis'); axis.replaceChildren();
+    for (const f of [0, 0.5, 1]) {
+      const s = document.createElement('span'); s.style.left = (f * 100) + '%';
+      s.textContent = f === 0 ? '0' : money(top * f);
+      if (f === 1) s.style.transform = 'translateX(-100%)';
+      axis.appendChild(s);
+    }
+
+    el('d-gap').textContent = (r.lo != null && r.hi != null)
+      ? `Likely range ${money(r.lo)} to ${money(r.hi)}.` : '';
+    el('d-range').textContent = gapPct == null ? ''
+      : (Math.abs(gapPct) < 8 ? 'His numbers land within a few per cent of his price tag.'
+        : gapPct > 0 ? `His numbers justify about ${Math.abs(gapPct).toFixed(0)}% more than he currently costs.`
+        : `He costs about ${Math.abs(gapPct).toFixed(0)}% more than his numbers justify.`);
+
+    el('d-league').textContent = r.league;
+    el('d-season').textContent = r.season;
+    el('d-mins').textContent = `${r.matches ?? '—'} / ${r.minutes != null ? r.minutes.toLocaleString('en') : '—'}`;
+    el('d-share').textContent = r.minutes_share != null ? Math.round(r.minutes_share * 100) + '%' : '—';
+    const c = confOf(r);
+    el('d-conf').textContent = c != null ? Math.round(c * 100) + '%' : '—';
+
+    // why factors
+    const why = el('d-why'), whyWrap = el('d-why-wrap');
+    why.replaceChildren();
+    const group = (prefix) => [1, 2, 3].map((k) => ({ code: r[prefix + k], pct: N(r[prefix + k + '_pct']) }))
+      .filter((x) => x.code && x.pct != null);
+    const pitch = group('perf'), situation = group('ctx');
+    if (pitch.length || situation.length) {
+      whyWrap.hidden = false;
+      const base = N(r.base_m);
+      if (base != null) {
+        const p = document.createElement('p'); p.className = 'sr-note-box'; p.style.marginBottom = '8px';
+        p.textContent = `A typical ${(POS_ONE[r.pos] || 'player').toLowerCase()} in ${r.season} is worth about `
+          + `${money(base)}. These move him to ${money(r.model)}.`;
+        why.appendChild(p);
+      }
+      const band = (items, label) => {
+        if (!items.length) return;
+        const row = document.createElement('div'); row.style.marginBottom = '8px';
+        const lab = document.createElement('div'); lab.className = 'sr-bar-lab'; lab.style.marginBottom = '5px';
+        lab.textContent = label; row.appendChild(lab);
+        for (const it of items) {
+          const chip = document.createElement('span');
+          chip.className = 'sr-why-chip ' + (it.pct > 0 ? 'sr-why-up' : 'sr-why-dn');
+          chip.textContent = reasonText(it.code) + ' ' + (it.pct > 0 ? '+' : '−') + Math.abs(Math.round(it.pct)) + '%';
+          row.appendChild(chip);
+        }
+        why.appendChild(row);
+      };
+      band(pitch, 'WHAT HE DOES');
+      band(situation, 'HIS SITUATION');
+      const cap = document.createElement('p'); cap.className = 'sr-note-box'; cap.style.marginTop = '4px';
+      cap.textContent = 'These explain how the fair value above was built up from a typical player at his '
+        + 'position — they can all point up and he can still be overvalued, if the market price has moved '
+        + 'even further than they have.';
+      why.appendChild(cap);
+    } else { whyWrap.hidden = true; }
+
+    // positional stats, with a hover tooltip explaining each percentile against real peers
+    const host = el('d-stats');
+    host.replaceChildren();
+    el('d-stats-head').textContent = `VS OTHER ${(POS_LABEL[r.pos] || 'PLAYERS').toUpperCase()}, ${r.season}`;
+    const labels = (POS_STATS[r.pos] || []);
+    const tip = tipFor(host);
+    // a fair comparison set: same position and season, with enough minutes to mean something
+    const peers = ALL.filter((x) => x.pos === r.pos && x.season === r.season && (x.minutes_share || 0) >= 0.25);
+    const lowSample = !isTrue(r.regular);
+
+    for (let i = 0; i < labels.length; i++) {
+      const label = labels[i], val = N(r['s' + (i + 1) + '_val']), pct = N(r['s' + (i + 1) + '_pct']);
+      if (!label || val == null) continue;
+      const box = document.createElement('div'); box.className = 'sr-stat';
+      const top2 = document.createElement('div'); top2.className = 'sr-stat-top';
+      const nm = document.createElement('span'); nm.textContent = label;
+      const vl = document.createElement('span');
+      vl.textContent = pct == null ? `${val} (not ranked)` : `${val} · ${ord(pct)} pct`;
+      top2.append(nm, vl);
+      const track = document.createElement('div'); track.className = 'sr-pct-track';
+      const fill = document.createElement('div'); fill.className = 'sr-pct-fill';
+      if (pct == null) {
+        fill.style.width = '0%';
+        track.style.opacity = '.45';
+      } else {
+        fill.style.width = Math.max(1, Math.min(100, pct)) + '%';
+        fill.style.background = pct >= 66 ? COLOR_MODEL : (pct >= 33 ? 'var(--sr-muted2)' : COLOR_MARKET);
+      }
+      track.appendChild(fill);
+
+      track.addEventListener('pointerenter', (event) => {
+        tip.replaceChildren();
+        const head = document.createElement('div'); head.className = 'sr-tip-head'; head.textContent = label;
+        const body = document.createElement('div');
+        if (pct == null) {
+          body.textContent = lowSample
+            ? `Not enough minutes played this season (${r.minutes ?? 0}) to rank him against other `
+              + `${POS_LABEL[r.pos] || 'players'} fairly.`
+            : `No percentile on record for this statistic.`;
+        } else {
+          const field = 's' + (i + 1) + '_val';
+          const peerVals = peers.map((x) => N(x[field])).filter((v) => v != null);
+          const n = peerVals.length || 1;
+          const more = Math.round(peerVals.filter((v) => v > val).length / n * 100);
+          const same = Math.round(peerVals.filter((v) => v === val).length / n * 100);
+          const fewer = Math.max(0, 100 - more - same);
+          const sorted = peerVals.slice().sort((a, b) => a - b);
+          const median = sorted.length ? sorted[Math.floor(sorted.length / 2)] : null;
+          const them = POS_LABEL[r.pos] || 'players';
+          const thing = label.replace(/ per 90$/i, '').toLowerCase();
+          let line;
+          if (val === 0) {
+            line = `${r.player} has no ${thing} this season. ${more}% of ${them} have at least one; `
+              + `the other ${same}% are also on none.`;
+          } else if (more <= 5) {
+            line = `${r.player}: ${val}. Only ${more}% of ${them} do more.`;
+          } else {
+            line = `${r.player}: ${val}. ${more}% of ${them} do more, ${fewer}% do less.`;
+          }
+          if (median != null && median > 0) line += ` A typical ${them.replace(/s$/, '')}: ${median}.`;
+          body.textContent = line;
+        }
+        tip.append(head, body);
+        tip.style.opacity = '1';
+        placeTip(tip, host, event);
+      });
+      track.addEventListener('pointermove', (event) => placeTip(tip, host, event));
+      track.addEventListener('pointerleave', () => { tip.style.opacity = '0'; });
+
+      box.append(top2, track);
+      host.appendChild(box);
+    }
+
+    el('d-footnote').textContent = r.market
+      ? `Priced at ${LEAGUE_CODE[r.league] || r.league} · ${r.pos} benchmark. Treat the range, not the single number, as the estimate.`
+      : 'No market valuation on record for this contract.';
+
+    el('sr-overlay').classList.add('open');
+    el('sr-drawer').classList.add('open');
+  }
+  function closeDrawer() {
+    chosen = null;
+    el('sr-overlay').classList.remove('open');
+    el('sr-drawer').classList.remove('open');
+  }
+
+  // ------------------------------------------------------------- squad comparison --
+  let squadSelected = null; // Set, rebuilt per league
+
+  function fillSquad() {
+    const season = seasonSel.value;
+    const league = squadLeague.value;
+    el('squad-season').innerHTML = `<b>${season}</b>`;
+    const pool = ALL.filter((r) => r.season === season && (!league || r.league === league) && r.market != null);
+
+    const byTeam = new Map();
+    for (const r of pool) {
+      if (!byTeam.has(r.team)) byTeam.set(r.team, []);
+      byTeam.get(r.team).push(r);
+    }
+    const teams = Array.from(byTeam.keys()).sort((a, b) =>
+      byTeam.get(b).reduce((s, r) => s + (r.market || 0), 0) - byTeam.get(a).reduce((s, r) => s + (r.market || 0), 0));
+
+    if (!squadSelected || squadSelected.__league !== league) {
+      squadSelected = new Set(teams.slice(0, 2));
+      squadSelected.__league = league;
+    }
+
+    const chips = el('squad-chips');
+    chips.replaceChildren();
+    for (const t of teams) {
+      const b = document.createElement('button'); b.className = 'sr-chip' + (squadSelected.has(t) ? ' on' : '');
+      b.textContent = t;
+      b.addEventListener('click', () => {
+        if (squadSelected.has(t)) squadSelected.delete(t);
+        else if (squadSelected.size < 4) squadSelected.add(t);
+        fillSquad();
+      });
+      chips.appendChild(b);
+    }
+    el('squad-count').textContent = `${squadSelected.size} SELECTED / ${teams.length} CLUBS`;
+
+    const grid = el('squad-grid');
+    grid.replaceChildren();
+    const selectedTeams = teams.filter((t) => squadSelected.has(t));
+    if (!selectedTeams.length) {
+      const p = document.createElement('div'); p.className = 'sr-squad-empty';
+      p.textContent = 'Pick at least one club above to compare its book.';
+      grid.appendChild(p);
+      return;
+    }
+    const rollups = selectedTeams.map((t) => {
+      const players = byTeam.get(t).slice().sort((a, b) => (b.model || 0) - (a.model || 0));
+      const squadMarket = players.reduce((s, r) => s + (r.market || 0), 0);
+      const squadFair = players.reduce((s, r) => s + (r.model || 0), 0);
+      const ages = players.map((r) => r.age).filter((x) => x != null);
+      const avgAge = ages.length ? ages.reduce((s, x) => s + x, 0) / ages.length : null;
+      return { team: t, league: players[0]?.league, players, squadMarket, squadFair, avgAge };
+    });
+    const scaleMax = Math.max(1, ...rollups.map((r) => Math.max(r.squadMarket, r.squadFair)));
+
+    for (const r of rollups) {
+      const card = document.createElement('div'); card.className = 'sr-squad-card';
+      const head = document.createElement('div'); head.className = 'sr-squad-card-head';
+      const nm = document.createElement('div'); nm.className = 'sr-squad-name'; nm.textContent = r.team;
+      const lg = document.createElement('div'); lg.className = 'sr-squad-league';
+      lg.textContent = LEAGUE_CODE[r.league] || r.league || '';
+      head.append(nm, lg);
+
+      const stats = document.createElement('div'); stats.className = 'sr-squad-stats';
+      const s1 = document.createElement('span'); s1.innerHTML = `<b>${r.players.length}</b> PLAYERS`;
+      const s2 = document.createElement('span');
+      s2.innerHTML = `<b>${r.avgAge != null ? r.avgAge.toFixed(1) : '—'}</b> AVG AGE`;
+      const gap = r.squadFair - r.squadMarket;
+      const s3 = document.createElement('span');
+      s3.innerHTML = `<b style="color:${gap >= 0 ? 'var(--sr-green)' : 'var(--sr-red)'}">`
+        + `${gap >= 0 ? '+' : ''}${money(gap)}</b> GAP`;
+      stats.append(s1, s2, s3);
+
+      const barMkt = document.createElement('div'); barMkt.className = 'sr-bar-row';
+      barMkt.style.gridTemplateColumns = '7.5rem 1fr';
+      const l1 = document.createElement('span'); l1.className = 'sr-bar-lab'; l1.style.fontSize = '13.5px';
+      l1.textContent = 'Squad market';
+      const t1 = document.createElement('div'); t1.className = 'sr-bar-track'; t1.style.height = '22px';
+      const f1 = document.createElement('div'); f1.className = 'sr-bar-fill';
+      f1.style.width = Math.max(2, r.squadMarket / scaleMax * 100) + '%'; f1.style.background = COLOR_MARKET;
+      const v1 = document.createElement('span'); v1.className = 'sr-bar-val'; v1.style.fontSize = '13.5px';
+      v1.textContent = money(r.squadMarket);
+      t1.append(f1, v1); barMkt.append(l1, t1);
+
+      const barFair = document.createElement('div'); barFair.className = 'sr-bar-row';
+      barFair.style.gridTemplateColumns = '7.5rem 1fr';
+      const l2 = document.createElement('span'); l2.className = 'sr-bar-lab'; l2.style.fontSize = '13.5px';
+      l2.textContent = 'Squad fair value';
+      const t2 = document.createElement('div'); t2.className = 'sr-bar-track'; t2.style.height = '22px';
+      const f2 = document.createElement('div'); f2.className = 'sr-bar-fill';
+      f2.style.width = Math.max(2, r.squadFair / scaleMax * 100) + '%'; f2.style.background = COLOR_MODEL;
+      const v2 = document.createElement('span'); v2.className = 'sr-bar-val'; v2.style.fontSize = '13.5px';
+      v2.textContent = money(r.squadFair);
+      t2.append(f2, v2); barFair.append(l2, t2);
+
+      const list = document.createElement('div'); list.className = 'sr-squad-list';
+      const listLab = document.createElement('div'); listLab.className = 'sr-squad-list-lab';
+      listLab.textContent = `Top ${Math.min(5, r.players.length)} by fair value`;
+      list.appendChild(listLab);
+      for (const p of r.players.slice(0, 5)) {
+        const row = document.createElement('div'); row.className = 'sr-squad-prow';
+        row.style.cursor = 'pointer';
+        const nm2 = document.createElement('span'); nm2.textContent = `${p.player} · ${p.pos}`;
+        const vl = document.createElement('span'); vl.textContent = money(p.model);
+        row.append(nm2, vl);
+        row.addEventListener('click', () => openDrawer(p));
+        list.appendChild(row);
+      }
+
+      card.append(head, stats, barMkt, barFair, list);
+      grid.appendChild(card);
+    }
+  }
+
+  // ------------------------------------------------------------- model diagnostics --
+  function fillDiagnostics() {
+    const d = rows('worked_example')[0];
+    const worked = el('diag-worked');
+    worked.replaceChildren();
+    if (d) {
+      const market = N(d.market_m), basic = N(d.basic_m), model = N(d.model_m);
+      const offBasic = N(d.off_basic);
+      const offFull = N(d.off_full);
+      const title = document.createElement('p'); title.className = 'sr-note-box'; title.style.marginBottom = '10px';
+      title.innerHTML = `<b style="color:#fff">${d.player}</b>, ${d.team}, `
+        + `${d.age != null ? Math.round(N(d.age)) : '—'} years old &mdash; ${d.season}, a season neither attempt had seen.`;
+      worked.appendChild(title);
+      const row = (label, val, note, cls) => {
+        const r = document.createElement('div'); r.className = 'sr-worked-row';
+        const l = document.createElement('span'); l.textContent = label;
+        const v = document.createElement('span'); v.className = 'sr-worked-val';
+        if (cls) v.style.color = cls;
+        v.textContent = money(val);
+        const n = document.createElement('span'); n.className = 'sr-note-box'; n.textContent = note || '';
+        r.append(l, v, n);
+        return r;
+      };
+      worked.appendChild(row('The market says he is worth', market, ''));
+      worked.appendChild(row('Knowing only age, minutes and club', basic,
+        offBasic != null ? `${offBasic.toFixed(0)}% out` : '', 'var(--sr-muted)'));
+      worked.appendChild(row('Knowing what he does on the pitch too', model,
+        offFull != null ? `${offFull.toFixed(0)}% out` : '', 'var(--sr-green)'));
+    }
+
+    const accTbody = el('diag-tbody');
+    accTbody.replaceChildren();
+    const accRows = rows('accuracy').filter((a) => a.pos !== 'ALL');
+    for (const a of accRows) {
+      const tr = document.createElement('tr');
+      const c1 = document.createElement('td'); c1.textContent = a.pos_label || a.pos;
+      const c2 = document.createElement('td'); c2.className = 'num tabular'; c2.textContent = a.n ?? '—';
+      const c3 = document.createElement('td'); c3.className = 'num tabular';
+      c3.textContent = a.err_nostats != null ? `${N(a.err_nostats).toFixed(1)}%` : '—';
+      const c4 = document.createElement('td'); c4.className = 'num tabular';
+      c4.textContent = a.err_withstats != null ? `${N(a.err_withstats).toFixed(1)}%` : '—';
+      const c5 = document.createElement('td'); c5.className = 'num tabular';
+      const gain = N(a.gain);
+      c5.textContent = gain != null ? `${gain > 0 ? '+' : ''}${gain.toFixed(1)}` : '—';
+      c5.style.color = gain > 0 ? 'var(--sr-green)' : (gain < 0 ? 'var(--sr-red)' : '');
+      const c6 = document.createElement('td'); c6.className = 'num tabular';
+      c6.textContent = a.r2 != null ? N(a.r2).toFixed(3) : '—';
+      tr.append(c1, c2, c3, c4, c5, c6);
+      accTbody.appendChild(tr);
+    }
+
+    const exTbody = el('diag-examples-tbody');
+    exTbody.replaceChildren();
+    for (const r of rows('examples')) {
+      const tr = document.createElement('tr');
+      const name = document.createElement('td');
+      name.innerHTML = `${r.player}<div class="sr-name-sub">${r.team} · ${r.pos}</div>`;
+      const mkt = document.createElement('td'); mkt.className = 'num tabular'; mkt.textContent = money(N(r.market_m));
+      const mdl = document.createElement('td'); mdl.className = 'num tabular'; mdl.textContent = money(N(r.model_m));
+      const off = document.createElement('td'); off.className = 'num tabular';
+      const v = N(r.off_pct) ?? 0;
+      off.textContent = Math.round(v) + '%';
+      off.className += v <= 20 ? ' sr-off-good' : (v >= 45 ? ' sr-off-bad' : '');
+      tr.append(name, mkt, mdl, off);
+      exTbody.appendChild(tr);
+    }
+  }
+
+  // ------------------------------------------------------------------ tabs --
+  function showTab(tab) {
+    closeDrawer();
+    for (const panel of document.querySelectorAll('.sr-panel')) {
+      panel.hidden = panel.id !== `panel-${tab}`;
+    }
+    for (const b of document.querySelectorAll('#sr-nav button')) {
+      b.classList.toggle('on', b.dataset.tab === tab);
+    }
+    dash.setLink(`panel-${tab}`);
+  }
+
+  // ----------------------------------------------------------------- export --
+  function exportCsv() {
+    const cols = ['player', 'team', 'league', 'pos', 'age', 'season', 'minutes', 'market_m', 'model_m', 'gap_m'];
+    const lines = [cols.join(',')];
+    for (const r of FILTERED) {
+      lines.push(cols.map((c) => {
+        const v = r[c] == null ? '' : String(r[c]);
+        return /[,"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }).join(','));
+    }
+    const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'scouting-register.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // --------------------------------------------------------------- bootstrap --
+  dash.onData(() => {
+    COLOR_MODEL = dash.colors[2];
+    COLOR_MARKET = dash.colors[4];
+
+    ALL = rows('players').map(prep);
+    if (!ALL.length) return;
+
+    const seasons = Array.from(new Set(ALL.map((r) => r.season))).sort().reverse();
+    if (seasonSel.options.length !== seasons.length) {
+      seasonSel.replaceChildren(...seasons.map((s) => new Option(s, s)));
+      seasonSel.value = seasons[0];
+    }
+    const leagues = Array.from(new Set(ALL.map((r) => r.league))).sort();
+    if (leagueSel.options.length !== leagues.length + 1) {
+      leagueSel.replaceChildren(new Option('All leagues', ''), ...leagues.map((l) => new Option(l, l)));
+    }
+    if (arbLeague.options.length !== leagues.length + 1) {
+      arbLeague.replaceChildren(new Option('All leagues', ''), ...leagues.map((l) => new Option(l, l)));
+    }
+    if (squadLeague.options.length !== leagues.length + 1) {
+      squadLeague.replaceChildren(new Option('All leagues', ''), ...leagues.map((l) => new Option(l, l)));
+      squadLeague.value = leagues.includes('Premier League') ? 'Premier League' : '';
+    }
+
+    el('t-season').textContent = seasonSel.value;
+    const latest = ALL.filter((r) => r.season === seasonSel.value);
+    const cap = latest.reduce((s, r) => s + (r.market || 0), 0);
+    el('t-cap').textContent = moneyFull(cap);
+    el('t-n').textContent = latest.length.toLocaleString('en');
+    const withGap = latest.filter((r) => r.gap != null && r.market && isTrue(r.regular));
+    if (withGap.length) {
+      const g = withGap.slice().sort((a, b) => b.gap - a.gap)[0];
+      el('t-gap-name').textContent = `${g.player} (${LEAGUE_CODE[g.league] || g.league})`;
+      el('t-gap-val').textContent = `+${money(g.gap)}`;
+    }
+    const acc = rows('accuracy').find((a) => a.pos === 'ALL');
+    if (acc) {
+      el('t-acc').textContent = acc.within30_display || '—';
+      el('k-acc').textContent = acc.err_display || '—';
+      el('k-acc-within').textContent = acc.within30_display || '—';
+      el('k-acc-n').textContent = acc.n_display ? `${acc.n_display} tested →` : '—';
+    }
+
+    recompute();
+    fillArbLists();
+    fillOverview();
+    fillSquad();
+    fillDiagnostics();
+    if (chosen) {
+      const r = FILTERED.find((x) => x.id === chosen) || ALL.find((x) => x.id === chosen);
+      if (r) openDrawer(r);
+    }
+  });
+
+  for (const sel of [arbLeague, arbPos, arbAge, arbMinval, arbRankby]) {
+    sel.addEventListener('change', fillArbLists);
+  }
+  squadLeague.addEventListener('change', fillSquad);
+
+  el('sr-nav').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-tab]'); if (!b) return;
+    showTab(b.dataset.tab);
+  });
+  el('k-acc-tile').addEventListener('click', () => showTab('diagnostics'));
+  document.querySelectorAll('[data-goto]').forEach((b) => {
+    b.addEventListener('click', () => showTab(b.dataset.goto));
+  });
+
+  posSeg.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    posFilter = b.dataset.pos;
+    posSeg.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+    PAGE = 1; recompute();
+  });
+  for (const sel of [leagueSel, sortSel]) sel.addEventListener('change', () => { PAGE = 1; recompute(); });
+  seasonSel.addEventListener('change', () => {
+    PAGE = 1; el('t-season').textContent = seasonSel.value;
+    recompute(); fillArbLists(); fillOverview(); fillSquad();
+  });
+  regularBox.addEventListener('change', () => { PAGE = 1; recompute(); });
+  search.addEventListener('input', () => { PAGE = 1; recompute(); });
+  el('sr-reset').addEventListener('click', () => {
+    search.value = ''; leagueSel.value = ''; regularBox.checked = false; sortSel.value = 'fair-desc';
+    posFilter = ''; posSeg.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x.dataset.pos === ''));
+    PAGE = 1; recompute();
+  });
+  el('sr-export').addEventListener('click', exportCsv);
+  el('sr-table').querySelectorAll('th.sortable').forEach((th) => {
+    th.addEventListener('click', () => { sortSel.value = th.dataset.sort; PAGE = 1; recompute(); });
+  });
+  el('sr-overlay').addEventListener('click', closeDrawer);
+  el('d-close').addEventListener('click', closeDrawer);
+  el('d-close2').addEventListener('click', closeDrawer);
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+})();
+</script>

@@ -1,0 +1,16 @@
+# Raw/large data dumps and trained models - not portfolio material, kept local
+/rawdata/
+/rawdata_tm/
+/rawdata_fm/
+/rawdata_us/
+/data/
+/models/
+/dashboard_data/
+__pycache__/
+*.pyc
+
+# Older draft of the dashboard (pre "Scouting Register" redesign)
+/dist/player-value-analyzer.html
+/dashboard_v2/index.html
+/dashboard_v2/index_new.json
+/dashboard_v2/_doc_index.json

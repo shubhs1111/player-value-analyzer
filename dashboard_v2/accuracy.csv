@@ -1,0 +1,6 @@
+pos,pos_label,n,err_nostats,err_withstats,gain,r2,within30,coverage,stats_used,err_display,within30_display,n_display,gain_display
+ALL,All players,1635,,30.0,,,50.2,,,30%,50%,"1,635",
+DF,Defenders,606,33.5,29.5,4.0,0.839,50.7,80.2,"tackles_p90, interceptions_p90, clearances_p90, blocks_p90",30%,51%,606,+4 points
+FW,Forwards,412,39.7,29.1,10.6,0.8302,51.9,76.0,"goals_p90, assists_p90, xg_p90, xa_p90",29%,52%,412,+11 points
+GK,Goalkeepers,121,40.9,47.0,-6.1,0.7147,34.7,75.2,"saves_p90, goals_conceded_p90, clean_sheets, passes_p90",47%,35%,121,-6 points
+MF,Midfielders,496,35.8,28.1,7.7,0.8459,51.6,76.0,"passes_p90, chances_p90, xa_p90, big_chances_p90",28%,52%,496,+8 points
