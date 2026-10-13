@@ -334,10 +334,19 @@
 
   <div class="sr-head">
     <div class="sr-head-left">
-      <div class="sr-mark">SR</div>
+      <div class="sr-mark">
+        <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+          <circle cx="7.5" cy="7.5" r="6" fill="var(--sr-accent)"/>
+          <path d="M7.5 5.3L9.59 6.82L8.79 9.28H6.21L5.41 6.82Z" fill="#1e2227"/>
+          <g transform="translate(11,10) scale(0.5)">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" fill="var(--sr-accent)"/>
+            <circle cx="7" cy="7" r="1.6" fill="#1e2227"/>
+          </g>
+        </svg>
+      </div>
       <div>
-        <h1 class="sr-title">The Scouting Register</h1>
-        <p class="sr-sub">Big-5 leagues &middot; algorithmic valuation ledger</p>
+        <h1 class="sr-title">The Valuation Model</h1>
+        <p class="sr-sub">Big-5 leagues &middot; player valuation model</p>
       </div>
     </div>
     <div class="sr-head-right">
@@ -353,8 +362,8 @@
 
   <nav class="sr-nav" id="sr-nav">
     <button data-tab="overview" class="on"><i>&#8984;1</i> OVERVIEW</button>
-    <button data-tab="register"><i>&#8984;2</i> VALUATIONS REGISTER</button>
-    <button data-tab="arbitrage"><i>&#8984;3</i> ARBITRAGE DESK</button>
+    <button data-tab="register"><i>&#8984;2</i> PLAYER VALUATIONS</button>
+    <button data-tab="arbitrage"><i>&#8984;3</i> VALUATION GAPS</button>
     <button data-tab="squad"><i>&#8984;4</i> SQUAD COMPARISON</button>
   </nav>
 
@@ -396,7 +405,7 @@
     <div class="sr-ov-hero">
       <h2 class="sr-ov-h1">What is a footballer actually worth?</h2>
       <p class="sr-ov-lead">
-        The Scouting Register prices every Big-5 player-season from what he actually does on the pitch for his
+        The Valuation Model prices every Big-5 player-season from what he actually does on the pitch for his
         position &mdash; age, playing time and the squad around him included &mdash; then sets that fair value
         beside his Transfermarkt market price. Where the two disagree by a wide margin, somebody is either a
         bargain or a risk.
@@ -516,7 +525,7 @@
   <div class="sr-panel" id="panel-arbitrage" hidden>
   <div class="sr-arb" data-source="players">
     <div class="sr-arb-head">
-      <span class="sr-arb-title">Arbitrage Desk &mdash; where the model and the market disagree</span>
+      <span class="sr-arb-title">Valuation Gaps &mdash; where the model and the market disagree</span>
       <span class="sr-arb-sub" id="arb-season-lab">—</span>
     </div>
     <div class="sr-arb-console">
