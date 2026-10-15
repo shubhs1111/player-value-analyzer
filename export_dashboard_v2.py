@@ -29,12 +29,22 @@ POS_LABEL = {"GK": "Goalkeepers", "DF": "Defenders", "MF": "Midfielders", "FW": 
 
 SUFFIX = re.compile(r"\s*(S\.?p\.?A\.?|S\.?A\.?D\.?|Football Club|Futebol Clube|Calcio)\.?\s*$", re.I)
 
+# FotMob renamed a handful of clubs between the first scrape and the current season, so the
+# same club arrives under two spellings depending on when its season was cached. Left
+# alone, a club filter or a name search splits one club in two - Alavés up to 2025/26 and
+# Deportivo Alavés from 2026/27. Canonical form is the club's current name.
+CLUB_ALIASES = {
+    "Atlético de Madrid": "Atlético Madrid",
+    "Deportivo de La Coruña": "Deportivo A Coruña",
+    "Alavés": "Deportivo Alavés",
+}
+
 
 def tidy_club(x: str) -> str:
     x = str(x).replace("�", "").strip()
     for _ in range(2):
         x = SUFFIX.sub("", x).strip(" .-")
-    return x
+    return CLUB_ALIASES.get(x, x)
 
 
 def main() -> None:

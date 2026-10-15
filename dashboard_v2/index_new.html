@@ -450,6 +450,7 @@
         <div id="ov-dear"></div>
       </div>
     </div>
+    <p class="sr-arb-note" id="ov-floor-note" style="margin: -8px 16px 16px;"></p>
   </div>
 
   <div class="sr-panel" id="panel-register" hidden>
@@ -552,7 +553,6 @@
         <option value="5">&euro;5m</option>
         <option value="20">&euro;20m</option>
         <option value="50">&euro;50m</option>
-        <option value="0">any price</option>
       </select>
       <span class="sr-console-lab">Rank by</span>
       <select class="sr-sel" id="arb-rankby">
@@ -576,10 +576,10 @@
         </div>
         <div id="arb-dear"></div>
         <p class="sr-arb-note">Fair value sits below market price &mdash; often a big-club reputation, a long
-          contract, or a young player bought on promise. Regular minutes only, so no one rides two substitute
-          appearances onto the list.</p>
+          contract, or a young player bought on promise.</p>
       </div>
     </div>
+    <p class="sr-arb-note" id="arb-floor-note" style="margin: 12px 0 0;"></p>
   </div>
   </div>
 
@@ -728,6 +728,20 @@
     const spread = (r.hi - r.lo) / (2 * r.model);
     return Math.max(0.05, Math.min(0.99, 1 - spread));
   };
+
+  // Floors for every ranked or featured list. "Regular minutes" is a SHARE of the team's
+  // minutes, which is what makes a part-played season comparable - but eight matches into a
+  // season 80% of the team's minutes is only ~350 minutes, so the share alone lets a tiny
+  // sample top the table. And a €0.3m price turns any fair value into a huge multiple: the
+  // ratio is then measuring the price's resolution, not the player. Both floors are absolute.
+  const MIN_MINUTES = 450;    // the same bar FINDINGS.md compares league regulars at
+  const MIN_MARKET_M = 1;     // below this, >2x ratios are the rule rather than the find
+  const ranked = (r) => isTrue(r.regular)
+    && (r.minutes || 0) >= MIN_MINUTES && (r.market || 0) >= MIN_MARKET_M;
+  const FLOOR_LINE = `Ranked lists need ${MIN_MINUTES}+ minutes and a market price of at least `
+    + `€${MIN_MARKET_M}m, on top of regular minutes — below that the sample, not the player, `
+    + `drives the gap. The searchable register below is unfiltered.`;
+  const FLOOR_TAG = `${MIN_MINUTES}+ MIN · €${MIN_MARKET_M}M+`;
 
   // one symmetric band, used everywhere a row gets called under/over/fairly valued
   const DEV_THRESHOLD = 10;
@@ -943,16 +957,16 @@
     const ages = scope.map((r) => r.age).filter((x) => x != null).sort((a, b) => a - b);
     el('k-cap-med').textContent = ages.length ? `MEDIAN AGE ${ages[Math.floor(ages.length / 2)].toFixed(1)}` : '';
 
-    // headline single-player picks are restricted to regular minutes, so a three-game cameo
+    // headline single-player picks carry the ranked-list floors, so a three-game cameo
     // at a big club can't hijack the top spot on squad-strength alone
-    const withModel = scope.filter((r) => r.model != null && isTrue(r.regular));
+    const withModel = scope.filter((r) => r.model != null && ranked(r));
     if (withModel.length) {
       const top = withModel.slice().sort((a, b) => b.model - a.model)[0];
       el('k-top').textContent = `${top.player}`;
       el('k-top-team').textContent = `${top.team} · ${top.pos}`;
       el('k-top-val').textContent = money(top.model);
     }
-    const withGap = scope.filter((r) => r.gap != null && r.market && isTrue(r.regular));
+    const withGap = scope.filter((r) => r.gap != null && r.market && ranked(r));
     if (withGap.length) {
       const g = withGap.slice().sort((a, b) => b.gap - a.gap)[0];
       el('k-gap').textContent = g.player;
@@ -1024,13 +1038,14 @@
     const minVal = Number(arbMinval.value || 0);
     const byAbs = arbRankby.value === 'abs';
 
-    el('arb-season-lab').textContent = `${season} · regular minutes only`;
+    el('arb-season-lab').textContent = `${season} · ${FLOOR_TAG}`;
+    el('arb-floor-note').textContent = FLOOR_LINE;
 
     const pool = ALL.filter((r) => r.season === season
       && (!league || r.league === league) && (!pos || r.pos === pos)
       && r.ratio != null && r.market != null && r.market >= minVal
       && (!ageBand || (ageBand === 'u23' ? r.age < 23 : r.age >= Number(ageBand)))
-      && isTrue(r.regular));
+      && ranked(r));
 
     const score = (r) => byAbs ? (r.model || 0) - (r.market || 0) : (r.ratio - 1);
 
@@ -1053,13 +1068,14 @@
   function fillOverview() {
     const season = seasonSel.value;
     const pool = ALL.filter((r) => r.season === season && r.ratio != null && r.market != null
-      && isTrue(r.regular));
+      && ranked(r));
     const cheap = pool.filter((r) => r.ratio > 1).sort((a, b) => (b.ratio - 1) - (a.ratio - 1)).slice(0, 3);
     const dear = pool.filter((r) => r.ratio < 1).sort((a, b) => (a.ratio - 1) - (b.ratio - 1)).slice(0, 3);
     buildArbRows(el('ov-cheap'), cheap, 'cheap');
     buildArbRows(el('ov-dear'), dear, 'dear');
-    el('ov-cheap-n').textContent = `${season}, ALL LEAGUES`;
-    el('ov-dear-n').textContent = `${season}, ALL LEAGUES`;
+    el('ov-cheap-n').textContent = `${season} · ${FLOOR_TAG}`;
+    el('ov-dear-n').textContent = `${season} · ${FLOOR_TAG}`;
+    el('ov-floor-note').textContent = FLOOR_LINE;
   }
 
   // ----------------------------------------------------------------- drawer --
@@ -1442,7 +1458,7 @@
     const cap = latest.reduce((s, r) => s + (r.market || 0), 0);
     el('t-cap').textContent = moneyFull(cap);
     el('t-n').textContent = latest.length.toLocaleString('en');
-    const withGap = latest.filter((r) => r.gap != null && r.market && isTrue(r.regular));
+    const withGap = latest.filter((r) => r.gap != null && r.market && ranked(r));
     if (withGap.length) {
       const g = withGap.slice().sort((a, b) => b.gap - a.gap)[0];
       el('t-gap-name').textContent = `${g.player} (${LEAGUE_CODE[g.league] || g.league})`;
